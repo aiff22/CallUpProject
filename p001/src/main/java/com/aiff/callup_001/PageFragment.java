@@ -65,7 +65,8 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
                         if (res == "1") {
                             Intent intentMain = new Intent(getActivity(), MainPageActivity.class);
                             startActivity(intentMain);
-                        } tv1.setText("Incorrect Login / Password");
+                        }
+                        else tv1.setText("Incorrect Login / Password");
 
                     } catch (InterruptedException e) {
                         tv1.setText("An error occurred. Please, try again later.");

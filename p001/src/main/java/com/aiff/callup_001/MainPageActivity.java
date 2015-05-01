@@ -27,8 +27,8 @@ public class MainPageActivity extends TabActivity {
         tabHost.addTab(tabSpec);
 
         tabSpec = tabHost.newTabSpec("tag2");
-        tabSpec.setIndicator("Events");
-        tabSpec.setContent(new Intent(this, EventsActivity.class));
+        tabSpec.setIndicator("Calls");
+        tabSpec.setContent(new Intent(this, CallsActivity.class));
         tabHost.addTab(tabSpec);
 
         tabSpec = tabHost.newTabSpec("tag3");
@@ -37,8 +37,8 @@ public class MainPageActivity extends TabActivity {
         tabHost.addTab(tabSpec);
 
         tabSpec = tabHost.newTabSpec("tag4");
-        tabSpec.setIndicator("Calls");
-        tabSpec.setContent(new Intent(this, CallsActivity.class));
+        tabSpec.setIndicator("Events");
+        tabSpec.setContent(new Intent(this, EventsActivity.class));
         tabHost.addTab(tabSpec);
 
     }
