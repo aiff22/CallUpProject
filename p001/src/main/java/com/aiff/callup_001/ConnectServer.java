@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,13 +118,32 @@ class ConnectServer extends AsyncTask<String, Void, String> {
             }
 
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
             HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                System.out.println(line);
-                resp = resp + line;
+
+            if (reqType.equals("login")){
+                ObjectInputStream stream = new ObjectInputStream(response.getEntity().getContent());
+                try {
+                    List<List<String>> data = (List<List<String>>) stream.readObject();
+                    //List<List<String>> stateManager = ((UserData)getApplicationContext()).getData();
+                    UserData g = UserData.getInstance();
+                    g.setData(data);
+                    resp = "1";
+
+                } catch (ClassNotFoundException e) {
+                    resp = "-1";
+                    e.printStackTrace();
+                }
+
+            }
+
+            else {
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                String line = "";
+                while ((line = rd.readLine()) != null) {
+                    System.out.println(line);
+                    resp = resp + line;
+                }
             }
 
         } catch (IOException e) {
@@ -137,5 +157,6 @@ class ConnectServer extends AsyncTask<String, Void, String> {
         // TODO: check this.exception
         // TODO: do something with the feed
     }
+
 }
 

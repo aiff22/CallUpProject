@@ -1,8 +1,8 @@
 package com.aiff.callup_001;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,8 +60,13 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
                     args[2] = String.valueOf(password.getText());
 
                     try {
+
                         res = new ConnectServer().execute(args).get();
-                        tv1.setText(res);
+                        if (res == "1") {
+                            Intent intentMain = new Intent(getActivity(), MainPageActivity.class);
+                            startActivity(intentMain);
+                        } tv1.setText("Incorrect Login / Password");
+
                     } catch (InterruptedException e) {
                         tv1.setText("An error occurred. Please, try again later.");
                         e.printStackTrace();

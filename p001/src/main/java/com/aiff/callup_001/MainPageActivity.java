@@ -1,39 +1,45 @@
 package com.aiff.callup_001;
 
-import android.app.Activity;
+import android.app.TabActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.TabHost;
 
 
-public class MainPageActivity extends Activity {
-
+public class MainPageActivity extends TabActivity {
+    /** Called when the activity is first created. */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-    }
 
+        // получаем TabHost
+        TabHost tabHost = getTabHost();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_page, menu);
-        return true;
-    }
+        // инициализация была выполнена в getTabHost
+        // метод setup вызывать не нужно
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        TabHost.TabSpec tabSpec;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        tabSpec = tabHost.newTabSpec("tag1");
+        tabSpec.setIndicator("Cont");
+        tabSpec.setContent(new Intent(this, ContactsActivity.class));
+        tabHost.addTab(tabSpec);
 
-        return super.onOptionsItemSelected(item);
+        tabSpec = tabHost.newTabSpec("tag2");
+        tabSpec.setIndicator("Events");
+        tabSpec.setContent(new Intent(this, EventsActivity.class));
+        tabHost.addTab(tabSpec);
+
+        tabSpec = tabHost.newTabSpec("tag3");
+        tabSpec.setIndicator("Msgs");
+        tabSpec.setContent(new Intent(this, MessagesActivity.class));
+        tabHost.addTab(tabSpec);
+
+        tabSpec = tabHost.newTabSpec("tag4");
+        tabSpec.setIndicator("Calls");
+        tabSpec.setContent(new Intent(this, CallsActivity.class));
+        tabHost.addTab(tabSpec);
+
     }
 }
