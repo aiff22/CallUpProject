@@ -48,7 +48,6 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     String[] args = new String[6];
-                    String res = null;
 
                     args[0] = "login";
 
@@ -61,7 +60,7 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
 
                     try {
 
-                        res = new ConnectServer().execute(args).get();
+                        String res = new ConnectServer().execute(args).get();
                         if (res == "1") {
                             Intent intentMain = new Intent(getActivity(), MainPageActivity.class);
                             startActivity(intentMain);
@@ -75,15 +74,6 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
                         tv1.setText("An error occurred. Please, try again later.");
                         e.printStackTrace();
                     }
-
-                    // ERROR PROCESSING
-
-                    if (res.equals("-1"))
-                        tv1.setText("Incorrect Phone Number / Password");
-
-                    if (res.equals("-2"))
-                        tv1.setText("System error occurred. Please, try again later.");
-
 
                     return false;
                 }

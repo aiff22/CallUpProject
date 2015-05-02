@@ -53,7 +53,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Call"
+            android:text="Btn1"
             android:id="@+id/button"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle"/>
@@ -61,23 +61,16 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Msg"
+            android:text="Btn2"
             android:id="@+id/button1"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add+"
-            android:id="@+id/button2"
-            android:layout_weight = "1"
-            style="?android:attr/borderlessButtonStyle" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Del"
+            android:text="Btn3"
             android:id="@+id/button3"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />

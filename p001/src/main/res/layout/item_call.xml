@@ -61,7 +61,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Msg"
+            android:text="Message"
             android:id="@+id/button1"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
@@ -69,16 +69,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add+"
+            android:text="Deleete"
             android:id="@+id/button2"
-            android:layout_weight = "1"
-            style="?android:attr/borderlessButtonStyle" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Del"
-            android:id="@+id/button3"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 

@@ -1,6 +1,7 @@
 package com.aiff.callup_001;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -120,13 +121,15 @@ class ConnectServer extends AsyncTask<String, Void, String> {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
 
-            if (reqType.equals("login")){
+            if (reqType.equals("login") || reqType.equals("register") || reqType.equals("hello")){
+
                 ObjectInputStream stream = new ObjectInputStream(response.getEntity().getContent());
                 try {
                     List<List<String>> data = (List<List<String>>) stream.readObject();
-                    //List<List<String>> stateManager = ((UserData)getApplicationContext()).getData();
                     UserData g = UserData.getInstance();
                     g.setData(data);
+
+                    Log.d("myLogs", String.valueOf(data));
                     resp = "1";
 
                 } catch (ClassNotFoundException e) {
@@ -157,6 +160,5 @@ class ConnectServer extends AsyncTask<String, Void, String> {
         // TODO: check this.exception
         // TODO: do something with the feed
     }
-
 }
 
