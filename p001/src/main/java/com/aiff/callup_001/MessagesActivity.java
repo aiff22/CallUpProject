@@ -48,7 +48,7 @@ public class MessagesActivity extends Activity implements View.OnClickListener {
 
         for (int i = data.size() - 1; i >= 0; i--) {
 
-            List<String> d = data.get(i);
+            final List<String> d = data.get(i);
 
             View item = ltInflater.inflate(R.layout.item_message, linLayout, false);
             item.setOnClickListener(this);
@@ -65,6 +65,17 @@ public class MessagesActivity extends Activity implements View.OnClickListener {
             tvSalary.setText(d.get(3));
             item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
             item.setBackgroundColor(colors[i % 2]);
+
+            Button btnMsgs = (Button) item.findViewById(R.id.button);
+            btnMsgs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intentSendMessage = new Intent(MessagesActivity.this, SendMessageActivity.class);
+                    intentSendMessage.putExtra("contact", d.get(1));
+                    startActivity(intentSendMessage);
+                }
+            });
+
             linLayout.addView(item);
         }
     }

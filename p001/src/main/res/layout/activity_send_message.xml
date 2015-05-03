@@ -33,7 +33,7 @@
             android:inputType="phone"
             android:textSize="20sp"
             android:ems="10"
-            android:text="11233333"
+            android:text=""
             android:layout_marginRight="5dp"
             android:layout_marginTop="0dp"
             android:layout_gravity="right" />

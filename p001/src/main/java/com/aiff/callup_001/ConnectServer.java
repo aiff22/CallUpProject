@@ -128,40 +128,9 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                     List<List<String>> data = (List<List<String>>) stream.readObject();
 
                     UserData g = UserData.getInstance();
+                    if ((data.size() > 1 && reqType.equals("hello")) || !reqType.equals("hello")) g.setData(data);
 
-                    if (!reqType.equals("hello")) g.setData(data);
-                    else {
-                        for (int i = 0; i < data.size(); i++) {
-                            List<String> d = data.get(i);
-
-                            switch (d.get(0)) {
-                                case "1":   // new message
-                                    d.set(0, "messages");
-                                    d.set(3, "2");
-                                    List<List<String>> addData1 = new ArrayList<>();
-                                    addData1.add(d);
-                                    g.setData(addData1);
-                                    break;
-
-                                case "2":   // new call
-                                    break;
-
-                                case "3":   // missing call
-                                    d.set(0, "calls");
-                                    d.set(2, d.get(4));
-                                    d.set(3, "3");
-                                    d.remove(4);
-                                    List<List<String>> addData3 = new ArrayList<>();
-                                    addData3.add(d);
-                                    g.setData(addData3);
-                                    break;
-
-                                case "4":   // new contact
-                                    break;
-
-                            }
-                        }
-                    }
+                    if (reqType.equals("hello")) g.setNewEvents(data);
 
                     Log.d("myLogs", String.valueOf(data));
                     resp = "1";

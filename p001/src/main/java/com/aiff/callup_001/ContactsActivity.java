@@ -18,6 +18,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +30,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
     private Timer mTimer;
     private MyTimerTask mMyTimerTask;
+    List <String> online = new ArrayList<>();
 
     /**
      * Called when the activity is first created.
@@ -62,6 +64,10 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             tvPosition.setText(d.get(1));
             TextView tvSalary = (TextView) item.findViewById(R.id.tvSalary);
             tvSalary.setText(d.get(3));
+
+            if (d.get(3).equals("2")) online.add("false");
+            tvSalary.setText("offline");
+
             item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
             item.setBackgroundColor(colors[i % 2]);
 
@@ -109,10 +115,59 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                     args[2] = storedPass;
                     String res = null;
 
-                    Toast.makeText(ContactsActivity.this, "Hello!", Toast.LENGTH_SHORT).show();
-
                     try {
                         res = new ConnectServer().execute(args).get();
+
+                        UserData g = UserData.getInstance();
+                        List<List<String>> data = g.getNewEvents();
+
+                        for (int i = 0; i < data.size(); i++) {
+                            List<String> d = data.get(i);
+                            if (d.get(0).equals("events")) {
+                                switch (d.get(3)) {
+                                    case "1":   // new message
+                                        d.set(0, "messages");
+                                        d.set(3, "2");
+                                        List<List<String>> addData1 = new ArrayList<>();
+                                        addData1.add(d);
+                                        g.setData(addData1);
+
+                                        Toast.makeText(ContactsActivity.this, "New incoming message", Toast.LENGTH_SHORT).show();
+
+                                        break;
+
+                                    case "2":   // new call
+
+                                        Toast.makeText(ContactsActivity.this, "Incoming call", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case "3":   // missing call
+                                        d.set(0, "calls");
+                                        d.set(2, d.get(4));
+                                        d.set(3, "3");
+                                        d.remove(4);
+                                        List<List<String>> addData3 = new ArrayList<>();
+                                        addData3.add(d);
+                                        g.setData(addData3);
+
+                                        Toast.makeText(ContactsActivity.this, "Missing call", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case "4":   // new contact
+
+                                        Toast.makeText(ContactsActivity.this, "New contact request", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                }
+                            } else {
+                                /*for (int j = 1; j < d.size(); j++) {
+                                    if (!online.get(j).equals(d.get(j))){
+                                        online.set(j, d.get(j));
+                                    }
+                                }*/
+                            }
+                        }
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {

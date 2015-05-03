@@ -14,6 +14,7 @@ public class UserData {
     private List<List<String>> data_calls = new ArrayList<>();
     private List<List<String>> data_messages = new ArrayList<>();
     private List<List<String>> data_events = new ArrayList<>();
+    private List<List<String>> new_events = new ArrayList<>();
 
     private UserData() {
     }
@@ -33,6 +34,12 @@ public class UserData {
     public List<List<String>> getEvents() {
         return this.data_events;
     }
+
+    public List<List<String>> getNewEvents() {
+        return this.new_events;
+    }
+
+    public void setNewEvents(List<List<String>> data) {this.new_events = data; }
 
 
     public void setData(List<List<String>> data) {

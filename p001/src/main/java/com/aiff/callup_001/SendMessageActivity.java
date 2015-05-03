@@ -19,12 +19,20 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 public class SendMessageActivity extends Activity implements View.OnClickListener {
 
     int[] colors = new int[2];
     String contact_number;
+
+    private Timer mTimer;
+    private MyTimerTask mMyTimerTask;
+
+
+    Integer smsNum = 0;
 
     /**
      * Called when the activity is first created.
@@ -71,6 +79,7 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
             if (d.get(1).equals(contact_number)) {
 
+                smsNum++;
                 View item;
 
                 if (d.get(3).equals("1")) {
@@ -89,8 +98,12 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
             }
         }
 
-    }
+        mTimer = new Timer();
+        mMyTimerTask = new MyTimerTask();
 
+        mTimer.schedule(mMyTimerTask, 2000, 2000);
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -108,7 +121,8 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
         String storedLogin = prefs.getString(userLoginKey, new String());
         String storedPass = prefs.getString(userPassKey, new String());
-        String text = String.valueOf(((EditText) findViewById(R.id.editText5)).getText());;
+        String text = String.valueOf(((EditText) findViewById(R.id.editText5)).getText());
+        ;
 
         String[] args = new String[6];
         args[0] = "msg";
@@ -165,4 +179,32 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
     }
 
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    UserData g = UserData.getInstance();
+                    List<List<String>> data = g.getMessages();
+
+                    Integer sms = 0;
+
+                    for (int i = 0; i < data.size(); i++)
+                        if (data.get(i).get(1).equals(contact_number)) sms++;
+
+                    if (sms != smsNum) {
+                        Intent intentSendMessage = new Intent(SendMessageActivity.this, SendMessageActivity.class);
+                        intentSendMessage.putExtra("contact", contact_number);
+                        startActivity(intentSendMessage);
+                        SendMessageActivity.this.finish();
+                    }
+                }
+            });
+        }
+    }
 }

@@ -42,9 +42,10 @@ public class EventsActivity extends Activity implements View.OnClickListener {
             item.setOnClickListener(this);
 
             TextView tvName = (TextView) item.findViewById(R.id.tvName);
-            tvName.setText(d.get(2).substring(0, 20));
+
+            tvName.setText(d.get(1));
             TextView tvPosition = (TextView) item.findViewById(R.id.tvPosition);
-            tvPosition.setText(d.get(1));
+            tvPosition.setText(d.get(2));
             TextView tvSalary = (TextView) item.findViewById(R.id.tvSalary);
             tvSalary.setText(d.get(3));
             item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
