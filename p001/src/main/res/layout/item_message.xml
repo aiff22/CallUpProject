@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:layout_gravity="top|center_horizontal"
-            android:textSize="24sp"></TextView>
+            android:textSize="20sp"></TextView>
 
         <TextView
             android:id="@+id/tvPosition"

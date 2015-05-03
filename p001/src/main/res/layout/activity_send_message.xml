@@ -5,15 +5,51 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:id="@+id/linLayoutNew"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toStartOf="@+id/ContactName"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/ContactPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Phone number:"
+            android:textStyle="italic"
+            android:textSize="20sp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1">
+        </TextView>
+
+        <EditText
+            android:id="@+id/editText6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:textSize="20sp"
+            android:ems="10"
+            android:text="11233333"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="right" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/ContactName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MESSAGES"
         android:textStyle="italic"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/linLayoutNew"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:visibility="visible">
     </TextView>
 
     <ScrollView

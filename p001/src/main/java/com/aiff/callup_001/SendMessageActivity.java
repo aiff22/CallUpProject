@@ -1,32 +1,46 @@
 package com.aiff.callup_001;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class SendMessageActivity extends Activity implements View.OnClickListener {
 
     int[] colors = new int[2];
+    String contact_number;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
 
         Intent intent = getIntent();
-        String contact_number = intent.getStringExtra("contact");
-        Log.d("SendMessageActivity", contact_number);
+        contact_number = intent.getStringExtra("contact");
+        //Log.d("SendMessageActivity", contact_number);
+
+        if (contact_number.equals("-1")) {
+            ((LinearLayout) findViewById(R.id.linLayoutNew)).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.ContactName)).setVisibility(View.GONE);
+        }
 
         UserData g = UserData.getInstance();
         List<List<String>> data = g.getMessages();
@@ -78,10 +92,76 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
     }
 
 
-
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
+        if (contact_number.equals("-1")) {
+            contact_number = String.valueOf(((EditText) findViewById(R.id.editText6)).getText());
+        }
+
+        // *** Prepare request ***
+
+        SharedPreferences prefs = this.getSharedPreferences(
+                "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+        final String userLoginKey = "com.aiff.callup_001.app.login";
+        final String userPassKey = "com.aiff.callup_001.app.pass";
+
+        String storedLogin = prefs.getString(userLoginKey, new String());
+        String storedPass = prefs.getString(userPassKey, new String());
+        String text = String.valueOf(((EditText) findViewById(R.id.editText5)).getText());;
+
+        String[] args = new String[6];
+        args[0] = "msg";
+        args[1] = storedLogin;
+        args[2] = storedPass;
+        args[3] = contact_number;
+        args[4] = text;
+
+        try {
+            String res = new ConnectServer().execute(args).get();
+            switch (res) {
+                case "-3":
+                    Toast.makeText(this, "System error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case "-1":
+                    Toast.makeText(this, "Authentication failure. Please, try again later.", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case "-2":
+                    Toast.makeText(this, "Contact " + contact_number + " not found.", Toast.LENGTH_SHORT).show();
+                    break;
+
+                default:
+                    List<List<String>> newMsg = new ArrayList<>();
+                    List<String> item = new ArrayList<>();
+                    item.add("messages");
+                    item.add(contact_number);
+                    item.add(text);
+                    item.add("1");
+                    item.add(res);
+                    newMsg.add(item);
+
+                    UserData g = UserData.getInstance();
+                    g.setData(newMsg);
+
+                    Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
+
+                    Intent intentSendMessage = new Intent(SendMessageActivity.this, SendMessageActivity.class);
+                    intentSendMessage.putExtra("contact", contact_number);
+                    startActivity(intentSendMessage);
+                    SendMessageActivity.this.finish();
+
+
+            }
+
+        } catch (InterruptedException e) {
+            Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
 
     }
 

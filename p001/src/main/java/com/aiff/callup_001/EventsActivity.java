@@ -34,7 +34,7 @@ public class EventsActivity extends Activity implements View.OnClickListener {
 
         LayoutInflater ltInflater = getLayoutInflater();
 
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = data.size() - 1; i >= 0; i--) {
 
             List<String> d = data.get(i);
 

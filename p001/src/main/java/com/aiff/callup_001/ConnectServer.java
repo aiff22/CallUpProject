@@ -37,7 +37,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "getId"));
 
-            if (reqType.equals("register")){
+            if (reqType.equals("register")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "register"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -59,7 +59,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[2]));
             }
 
-            if (reqType.equals("hello")){
+            if (reqType.equals("hello")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "hello"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -68,7 +68,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[2]));
             }
 
-            if (reqType.equals("call")){
+            if (reqType.equals("call")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "call"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -79,7 +79,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[3]));
             }
 
-            if (reqType.equals("msg")){
+            if (reqType.equals("msg")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "msg"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -92,7 +92,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[4]));
             }
 
-            if (reqType.equals("contact")){
+            if (reqType.equals("contact")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "contact"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -107,7 +107,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[5]));
             }
 
-            if (reqType.equals("delcontact")){
+            if (reqType.equals("delcontact")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "delcontact"));
                 nameValuePairs.add(new BasicNameValuePair("login",
@@ -121,13 +121,47 @@ class ConnectServer extends AsyncTask<String, Void, String> {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
 
-            if (reqType.equals("login") || reqType.equals("register") || reqType.equals("hello")){
+            if (reqType.equals("login") || reqType.equals("register") || reqType.equals("hello")) {
 
                 ObjectInputStream stream = new ObjectInputStream(response.getEntity().getContent());
                 try {
                     List<List<String>> data = (List<List<String>>) stream.readObject();
+
                     UserData g = UserData.getInstance();
-                    g.setData(data);
+
+                    if (!reqType.equals("hello")) g.setData(data);
+                    else {
+                        for (int i = 0; i < data.size(); i++) {
+                            List<String> d = data.get(i);
+
+                            switch (d.get(0)) {
+                                case "1":   // new message
+                                    d.set(0, "messages");
+                                    d.set(3, "2");
+                                    List<List<String>> addData1 = new ArrayList<>();
+                                    addData1.add(d);
+                                    g.setData(addData1);
+                                    break;
+
+                                case "2":   // new call
+                                    break;
+
+                                case "3":   // missing call
+                                    d.set(0, "calls");
+                                    d.set(2, d.get(4));
+                                    d.set(3, "3");
+                                    d.remove(4);
+                                    List<List<String>> addData3 = new ArrayList<>();
+                                    addData3.add(d);
+                                    g.setData(addData3);
+                                    break;
+
+                                case "4":   // new contact
+                                    break;
+
+                            }
+                        }
+                    }
 
                     Log.d("myLogs", String.valueOf(data));
                     resp = "1";
@@ -137,9 +171,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                     e.printStackTrace();
                 }
 
-            }
-
-            else {
+            } else {
 
                 BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
                 String line = "";

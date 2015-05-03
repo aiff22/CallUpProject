@@ -1,7 +1,10 @@
 package com.aiff.callup_001;
 
 import android.app.Activity;
+import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,16 +14,25 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 public class ContactsActivity extends Activity implements View.OnClickListener {
 
     int[] colors = new int[2];
 
+    private Timer mTimer;
+    private MyTimerTask mMyTimerTask;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
@@ -65,9 +77,52 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
             linLayout.addView(item);
         }
+
+        mTimer = new Timer();
+        mMyTimerTask = new MyTimerTask();
+
+        mTimer.schedule(mMyTimerTask, 5000, 5000);
     }
 
+    class MyTimerTask extends TimerTask {
 
+        @Override
+        public void run() {
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    SharedPreferences prefs = ContactsActivity.this.getSharedPreferences(
+                            "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+                    final String userLoginKey = "com.aiff.callup_001.app.login";
+                    final String userPassKey = "com.aiff.callup_001.app.pass";
+
+                    String storedLogin = prefs.getString(userLoginKey, new String());
+                    String storedPass = prefs.getString(userPassKey, new String());
+
+                    String[] args = new String[6];
+                    args[0] = "hello";
+                    args[1] = storedLogin;
+                    args[2] = storedPass;
+                    String res = null;
+
+                    Toast.makeText(ContactsActivity.this, "Hello!", Toast.LENGTH_SHORT).show();
+
+                    try {
+                        res = new ConnectServer().execute(args).get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -79,9 +134,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         if (ll.getVisibility() == View.GONE) {
             ll.setVisibility(View.VISIBLE);
-        }
-
-        else ll.setVisibility(View.GONE);
+        } else ll.setVisibility(View.GONE);
 
         //Log.d("ContactsLogs", String.valueOf(ll.getVisibility()));
     }
