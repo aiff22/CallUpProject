@@ -1,6 +1,9 @@
 package com.aiff.callup_001;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
@@ -42,11 +46,34 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
         if (pageNumber == 0) {
 
             view1 = inflater.inflate(R.layout.fragment, null);
-            Button btn1 = (Button) view1.findViewById(R.id.button1);
+            final Button btn1 = (Button) view1.findViewById(R.id.button1);
+
+            // *** Get user credentials ->
+
+            SharedPreferences prefs = getActivity().getSharedPreferences(
+                    "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+            final String userLoginKey = "com.aiff.callup_001.app.login";
+            final String userPassKey = "com.aiff.callup_001.app.pass";
+
+            String storedLogin = prefs.getString(userLoginKey, new String());
+            String storedPass = prefs.getString(userPassKey, new String());
+
+            EditText login = (EditText) view1.findViewById(R.id.phone_number);
+            EditText password = (EditText) view1.findViewById(R.id.password);
+            login.setText(storedLogin);
+            password.setText(storedPass);
+
+
+            // *** <- Get user credentials
+
             btn1.setOnTouchListener(new View.OnTouchListener() {
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+
+                    btn1.setEnabled(false);
+
                     String[] args = new String[6];
 
                     args[0] = "login";
@@ -62,16 +89,28 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
 
                         String res = new ConnectServer().execute(args).get();
                         if (res == "1") {
+
+                            SharedPreferences prefs = getActivity().getSharedPreferences(
+                                    "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+                            prefs.edit().putString(userLoginKey, args[1]).apply();
+                            prefs.edit().putString(userPassKey, args[2]).apply();
+
                             Intent intentMain = new Intent(getActivity(), MainPageActivity.class);
                             startActivity(intentMain);
+                            getActivity().finish();
+
+                        } else {
+                            tv1.setText("Incorrect Login / Password");
+                            btn1.setEnabled(true);
                         }
-                        else tv1.setText("Incorrect Login / Password");
 
                     } catch (InterruptedException e) {
                         tv1.setText("An error occurred. Please, try again later.");
+                        btn1.setEnabled(true);
                         e.printStackTrace();
                     } catch (ExecutionException e) {
                         tv1.setText("An error occurred. Please, try again later.");
+                        btn1.setEnabled(true);
                         e.printStackTrace();
                     }
 
@@ -173,7 +212,30 @@ public class PageFragment extends Fragment implements View.OnTouchListener {
                                 if (res.equals("-2"))
                                     tv4.setText("Invalid phone number. Try again.");
                                 if (res.equals("-1")) tv4.setText("An error occurred. Try again.");
-                                if (res.equals("1")) tv4.setText("Ok.");
+                                if (res.equals("1")){
+
+                                    final String userLoginKey = "com.aiff.callup_001.app.login";
+                                    final String userPassKey = "com.aiff.callup_001.app.pass";
+
+                                    SharedPreferences prefs = getActivity().getSharedPreferences(
+                                            "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+                                    prefs.edit().putString(userLoginKey, args[1]).apply();
+                                    prefs.edit().putString(userPassKey, args[2]).apply();
+
+                                    Toast.makeText(getActivity(), "Account Successfully Created!", Toast.LENGTH_SHORT).show();
+
+                                    Handler mHandler = new Handler();
+                                    mHandler.postDelayed(new Runnable() {
+                                        public void run() {
+                                            Intent intentMain = new Intent(getActivity(), MainPageActivity.class);
+                                            startActivity(intentMain);
+
+                                            getActivity().finish();
+                                        }
+                                    }, 1000);
+
+                                }
                             } catch (InterruptedException e) {
                                 tv4.setText("System error occured. Try again later.");
                                 e.printStackTrace();

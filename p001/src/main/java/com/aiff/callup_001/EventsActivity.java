@@ -58,7 +58,7 @@ public class EventsActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         LinearLayout ll = (LinearLayout) v.findViewById(R.id.linearLayout2);
-        ll.setBackgroundColor(Color.parseColor("#00000000"));
+        //ll.setBackgroundColor(Color.parseColor("#00000000"));
 
         if (ll.getVisibility() == View.GONE)
             ll.setVisibility(View.VISIBLE);

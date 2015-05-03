@@ -1,12 +1,14 @@
 package com.aiff.callup_001;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,7 +39,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         for (int i = 0; i < data.size(); i++) {
 
-            List<String> d = data.get(i);
+            final List<String> d = data.get(i);
 
             View item = ltInflater.inflate(R.layout.item_contact, linLayout, false);
             item.setOnClickListener(this);
@@ -50,6 +52,17 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             tvSalary.setText(d.get(3));
             item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
             item.setBackgroundColor(colors[i % 2]);
+
+            Button btnMsgs = (Button) item.findViewById(R.id.button1);
+            btnMsgs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intentSendMessage = new Intent(ContactsActivity.this, SendMessageActivity.class);
+                    intentSendMessage.putExtra("contact", d.get(1));
+                    startActivity(intentSendMessage);
+                }
+            });
+
             linLayout.addView(item);
         }
     }
@@ -64,8 +77,10 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         //Log.d("ContactsLogs", String.valueOf(ll.getVisibility()));
 
-        if (ll.getVisibility() == View.GONE)
+        if (ll.getVisibility() == View.GONE) {
             ll.setVisibility(View.VISIBLE);
+        }
+
         else ll.setVisibility(View.GONE);
 
         //Log.d("ContactsLogs", String.valueOf(ll.getVisibility()));
