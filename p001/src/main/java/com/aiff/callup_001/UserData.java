@@ -15,6 +15,8 @@ public class UserData {
     private List<List<String>> data_messages = new ArrayList<>();
     private List<List<String>> data_events = new ArrayList<>();
     private List<List<String>> new_events = new ArrayList<>();
+    private List<String> friends_online = new ArrayList<>();
+    private List<String> last_friends_online = new ArrayList<>();
 
     private UserData() {
     }
@@ -37,6 +39,14 @@ public class UserData {
 
     public List<List<String>> getNewEvents() {
         return this.new_events;
+    }
+
+    public List<String> getFriendsOnline() {
+        return this.friends_online;
+    }
+
+    public List<String> getLastFriendsOnline() {
+        return this.last_friends_online;
     }
 
     public void setNewEvents(List<List<String>> data) {this.new_events = data; }
@@ -64,6 +74,11 @@ public class UserData {
 
                     this.data_events.add(d);
                     break;
+
+                case "friends_online":
+
+                    this.last_friends_online = this.friends_online;
+                    this.friends_online = d;
             }
         }
 
@@ -71,6 +86,7 @@ public class UserData {
         Log.d("UserDataLogs:calls", String.valueOf(this.data_calls));
         Log.d("UserDataLogs:messages", String.valueOf(this.data_messages));
         Log.d("UserDataLogs:events", String.valueOf(this.data_events));
+        Log.d("UserDataLogs:friends", String.valueOf(this.friends_online));
 
     }
 
@@ -99,6 +115,29 @@ public class UserData {
             if (data_contacts.get(i).get(1).equals(contact_number))
                 return data_contacts.get(i).get(2);
         return "-1";
+    }
+
+    public void addContact(String contact_number, String action) {
+        for (int i = 0; i < data_contacts.size(); i++) {
+            if (data_contacts.get(i).get(1).equals(contact_number))
+                switch(action){
+                    case "add":
+                        data_contacts.get(i).set(3, "0");
+                        break;
+
+                    case "deleteFromFriends":
+                        data_contacts.get(i).set(3, "1");
+                        break;
+
+                    case "delete":
+                        data_contacts.remove(i);
+                        break;
+
+                    case "confirm":
+                        data_contacts.get(i).set(3, "2");
+                        break;
+                }
+        }
     }
 }
 

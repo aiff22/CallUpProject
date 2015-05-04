@@ -33,12 +33,20 @@
             android:layout_marginLeft="5dp"></TextView>
 
         <TextView
-            android:id="@+id/tvSalary"
+            android:id="@+id/onlineText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="Unknown"
             android:layout_gravity="bottom|right"
-            android:layout_marginRight="5dp"></TextView>
+            android:layout_marginRight="40dp" />
+
+        <ImageView
+            android:id="@+id/onlineImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="15dp"
+            android:src="@android:drawable/ic_secure" />
 
     </FrameLayout>
 
@@ -50,35 +58,76 @@
         android:layout_marginTop="0dp"
         android:visibility="gone">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Call"
+            android:src="@android:drawable/ic_menu_call"
             android:id="@+id/button"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Msg"
+            android:src="@android:drawable/ic_dialog_email"
             android:id="@+id/button1"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add+"
+            android:src="@android:drawable/ic_input_add"
             android:id="@+id/button2"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Del"
+            android:src="@android:drawable/ic_menu_delete"
             android:id="@+id/button3"
+            android:layout_weight = "1"
+            style="?android:attr/borderlessButtonStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept friend request?"
+            android:id="@+id/textAddContact"
+            android:layout_weight = "4"
+            android:textStyle="italic"
+            style="?android:attr/borderlessButtonStyle"/>
+
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add+"
+            android:src="@android:drawable/ic_input_add"
+            android:id="@+id/buttonAccept"
+            android:layout_weight = "1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Del"
+            android:src="@android:drawable/ic_delete"
+            android:id="@+id/buttonDecline"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 

@@ -118,6 +118,17 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[3]));
             }
 
+            if (reqType.equals("unfriend")) {
+                nameValuePairs.add(new BasicNameValuePair("request_type",
+                        "unfriend"));
+                nameValuePairs.add(new BasicNameValuePair("login",
+                        args[1]));
+                nameValuePairs.add(new BasicNameValuePair("pass",
+                        args[2]));
+                nameValuePairs.add(new BasicNameValuePair("id_contact",
+                        args[3]));
+            }
+
             if (reqType.equals("msgstatus")) {
                 nameValuePairs.add(new BasicNameValuePair("request_type",
                         "msgstatus"));
@@ -137,6 +148,8 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                 ObjectInputStream stream = new ObjectInputStream(response.getEntity().getContent());
                 try {
                     List<List<String>> data = (List<List<String>>) stream.readObject();
+
+                    Log.d("ConnectServer", String.valueOf(data));
 
                     UserData g = UserData.getInstance();
                     if ((data.size() > 1 && reqType.equals("hello")) || !reqType.equals("hello")) g.setData(data);
