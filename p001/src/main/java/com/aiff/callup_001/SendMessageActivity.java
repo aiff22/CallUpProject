@@ -43,7 +43,6 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
         Intent intent = getIntent();
         contact_number = intent.getStringExtra("contact");
-        //Log.d("SendMessageActivity", contact_number);
 
         if (contact_number.equals("-1")) {
             ((LinearLayout) findViewById(R.id.linLayoutNew)).setVisibility(View.VISIBLE);
@@ -83,8 +82,6 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
                 smsNum++;
                 View item;
-
-                Log.d("MessageSend type = ", d.get(3));
 
                 if (d.get(3).equals("1")) {
                     item = ltInflater.inflate(R.layout.item_message_right, linLayout, false);

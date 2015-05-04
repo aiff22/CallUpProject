@@ -54,7 +54,7 @@ public class EventsActivity extends Activity implements View.OnClickListener {
 
             final List<String> d = data.get(i);
 
-            Log.d("Events, type = ", d.get(3));
+            Log.d("EventsActivity; type", d.get(3));
 
             if (d.get(3).equals("1")) {
 

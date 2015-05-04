@@ -133,6 +133,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                         g.setData(addData1);
 
                                         Toast.makeText(ContactsActivity.this, "New incoming message", Toast.LENGTH_SHORT).show();
+                                        Log.d("ContactsLogs:events", String.valueOf(g.getEvents()));
 
                                         break;
 
