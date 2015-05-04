@@ -44,8 +44,8 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         Log.d("ContactsLogs", String.valueOf(data));
         Log.d("ContactsLogs", String.valueOf(data.size()));
 
-        colors[0] = Color.parseColor("#559966CC");
-        colors[1] = Color.parseColor("#55336699");
+        colors[0] = Color.parseColor("#FFFFCC");
+        //colors[1] = Color.parseColor("#55336699");
 
         LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
 
@@ -69,7 +69,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             tvSalary.setText("offline");
 
             item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
-            item.setBackgroundColor(colors[i % 2]);
+            item.setBackgroundColor(colors[0]);
 
             Button btnMsgs = (Button) item.findViewById(R.id.button1);
             btnMsgs.setOnClickListener(new View.OnClickListener() {

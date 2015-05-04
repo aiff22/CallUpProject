@@ -5,14 +5,33 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Message"
-        android:id="@+id/button5"
-        style="?android:attr/borderlessButtonStyle"
-        android:textStyle="italic"
-        android:background="@android:color/holo_green_light"/>
+        android:layout_height="60dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:text="New Message"
+            android:id="@+id/button5"
+            style="?android:attr/borderlessButtonStyle"
+            android:textStyle="italic"
+            android:background="@android:color/holo_green_light"
+            android:layout_weight="10"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:id="@+id/imageButton"
+            android:layout_gravity="right"
+            android:src="@android:drawable/ic_popup_sync"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginStart="5dp"
+            android:background="@android:color/holo_green_light"
+            android:layout_weight="1"/>
+
+        </LinearLayout>
+
+
 
     <ScrollView
         android:layout_width="match_parent"

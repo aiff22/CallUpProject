@@ -80,5 +80,25 @@ public class UserData {
         }
         return instance;
     }
+
+    public void setMessageRead(String contact_number) {
+        for (int i = 0; i < data_messages.size(); i++) {
+             if (data_messages.get(i).get(1).equals(contact_number))
+                 data_messages.get(i).set(3, "3");
+        }
+
+        for (int i = 0; i < data_events.size(); i++) {
+             if (data_events.get(i).get(3).equals("1") && data_events.get(i).get(1).equals(contact_number))
+                 data_events.remove(i);
+        }
+    }
+
+
+    public String findContact(String contact_number) {
+        for (int i = 0; i < data_contacts.size(); i++)
+            if (data_contacts.get(i).get(1).equals(contact_number))
+                return data_contacts.get(i).get(2);
+        return "-1";
+    }
 }
 

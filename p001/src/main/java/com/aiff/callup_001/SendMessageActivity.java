@@ -53,6 +53,8 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
         UserData g = UserData.getInstance();
         List<List<String>> data = g.getMessages();
 
+        if (!contact_number.equals("-1")) markMessagesAsRead(contact_number);
+
         colors[0] = Color.parseColor("#559966CC");
         colors[1] = Color.parseColor("#55336699");
 
@@ -82,11 +84,13 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                 smsNum++;
                 View item;
 
+                Log.d("MessageSend type = ", d.get(3));
+
                 if (d.get(3).equals("1")) {
-                    item = ltInflater.inflate(R.layout.item_message_left, linLayout, false);
+                    item = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
                     ((TextView) item.findViewById(R.id.textView8)).setBackgroundColor(colors[0]);
                 } else {
-                    item = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
+                    item = ltInflater.inflate(R.layout.item_message_left, linLayout, false);
                     ((TextView) item.findViewById(R.id.textView8)).setBackgroundColor(colors[0]);
                 }
 
@@ -122,7 +126,6 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
         String storedLogin = prefs.getString(userLoginKey, new String());
         String storedPass = prefs.getString(userPassKey, new String());
         String text = String.valueOf(((EditText) findViewById(R.id.editText5)).getText());
-        ;
 
         String[] args = new String[6];
         args[0] = "msg";
@@ -205,6 +208,37 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                     }
                 }
             });
+        }
+    }
+
+    private void markMessagesAsRead(String contact_number) {
+
+        UserData g = UserData.getInstance();
+        g.setMessageRead(contact_number);
+
+        SharedPreferences prefs = SendMessageActivity.this.getSharedPreferences(
+                "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+        final String userLoginKey = "com.aiff.callup_001.app.login";
+        final String userPassKey = "com.aiff.callup_001.app.pass";
+
+        String storedLogin = prefs.getString(userLoginKey, new String());
+        String storedPass = prefs.getString(userPassKey, new String());
+
+        String[] args = new String[6];
+        args[0] = "msgstatus";
+        args[1] = storedLogin;
+        args[2] = storedPass;
+        args[3] = contact_number;
+
+        try {
+            String res = new ConnectServer().execute(args).get();
+        } catch (InterruptedException e) {
+            Log.d("Error marking messages:", " 1");
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            Log.d("Error marking messages:", " 2");
+            e.printStackTrace();
         }
     }
 }
