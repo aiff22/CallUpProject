@@ -296,10 +296,58 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
             // *** Make a call ***
 
-            ImageButton btnCall = (ImageButton) item.findViewById(R.id.button1);
+            final ImageButton btnCall = (ImageButton) item.findViewById(R.id.button);
             btnCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    SharedPreferences prefs = ContactsActivity.this.getSharedPreferences(
+                            "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+                    String storedLogin = prefs.getString(userLoginKey, new String());
+                    String storedPass = prefs.getString(userPassKey, new String());
+
+                    String[] args = new String[6];
+                    args[0] = "call";
+                    args[1] = storedLogin;
+                    args[2] = storedPass;
+                    args[3] = d.get(1);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ContactsActivity.this);
+                    builder.setTitle("Calling to " + d.get(2) + "...");
+                    builder.setCancelable(true);
+
+                    final AlertDialog dlg = builder.create();
+
+                    Toast.makeText(ContactsActivity.this, "Call sent", Toast.LENGTH_SHORT).show();
+                    dlg.show();
+
+                    try {
+
+                        String res = new ConnectServer().execute(args).get();
+                        Toast.makeText(ContactsActivity.this, res, Toast.LENGTH_SHORT).show();
+                        Log.d("Room returned", res);
+
+                        if (!res.equals("-1") && !res.equals("-2")) {
+                            dlg.dismiss();
+                            Intent intentStartCall = new Intent(ContactsActivity.this, CallingActivity.class);
+                            intentStartCall.putExtra("contact", d.get(1));
+                            intentStartCall.putExtra("room", res);
+                            startActivity(intentStartCall);
+                        } else {
+                            if (res.equals("-1"))
+                                Toast.makeText(ContactsActivity.this, "No response", Toast.LENGTH_SHORT).show();
+                            if (res.equals("-2"))
+                                Toast.makeText(ContactsActivity.this, "Contact is busy", Toast.LENGTH_SHORT).show();
+                            else Toast.makeText(ContactsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (InterruptedException e) {
+                        Toast.makeText(ContactsActivity.this, "System error occurred", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        Toast.makeText(ContactsActivity.this, "System error occurred", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
 
                 }
             });
@@ -472,7 +520,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                     String storedLogin = prefs.getString(userLoginKey, new String());
                     String storedPass = prefs.getString(userPassKey, new String());
 
-                    String[] args = new String[6];
+                    final String[] args = new String[6];
                     args[0] = "hello";
                     args[1] = storedLogin;
                     args[2] = storedPass;
@@ -486,7 +534,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                         for (int i = 0; i < data.size(); i++) {
 
-                            List<String> d = new ArrayList<String>(data.get(i));
+                            final List<String> d = new ArrayList<String>(data.get(i));
                             if (d.get(0).equals("events")) {
 
                                 switch (d.get(3)) {
@@ -505,7 +553,54 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                                     case "2":   // new call
 
-                                        Toast.makeText(ContactsActivity.this, "Incoming call", Toast.LENGTH_SHORT).show();
+                                        args[0] = "respcall";
+                                        args[1] = storedLogin;
+                                        args[2] = storedPass;
+
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(ContactsActivity.this);
+
+                                        alert.setTitle(d.get(1) + " is calling...");
+                                        if (!g.findContact(d.get(1)).equals("-1"))
+                                            alert.setTitle(g.findContact(d.get(1)) + " is calling...");
+
+                                        alert.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                args[3] = "1";
+                                                try {
+                                                    String res = new ConnectServer().execute(args).get();
+                                                    if (!res.equals("-1") && !res.equals("-3")){
+                                                        Intent intentStartCall = new Intent(ContactsActivity.this, CallingActivity.class);
+                                                        intentStartCall.putExtra("contact", d.get(1));
+                                                        intentStartCall.putExtra("room", res);
+                                                        startActivity(intentStartCall);
+                                                    } else {
+                                                        Toast.makeText(ContactsActivity.this, "Call cancelled", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
+                                                } catch (ExecutionException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+
+                                        alert.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                args[3] = "0";
+                                                try {
+                                                    String res = new ConnectServer().execute(args).get();
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
+                                                } catch (ExecutionException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+
+                                        alert.show();
+
                                         break;
 
                                     case "3":   // missing call
@@ -524,6 +619,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                                         if(g.findContact(d.get(1)).equals("-1")){
                                             d.set(0, "contacts");
+                                            d.set(3, "3");
                                             d.remove(4);
                                             List<List<String>> addData4 = new ArrayList<>();
                                             addData4.add(d);
@@ -548,9 +644,9 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                 List<List<String>> addContacts = new ArrayList<>();
                                 addContacts.add(d);
                                 g.setData(addContacts);
-                                TabActivity tab = (TabActivity) getParent();
-                                tab.getTabHost().setCurrentTabByTag("tag2");
-                                tab.getTabHost().setCurrentTabByTag("tag1");
+//                                TabActivity tab = (TabActivity) getParent();
+//                                tab.getTabHost().setCurrentTabByTag("tag2");
+//                                tab.getTabHost().setCurrentTabByTag("tag1");
                             }
                         }
 

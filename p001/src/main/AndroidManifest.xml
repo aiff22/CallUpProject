@@ -45,6 +45,10 @@
             android:name=".SendMessageActivity"
             android:label="@string/title_activity_send_message" >
         </activity>
+        <activity
+            android:name=".CallingActivity"
+            android:label="@string/title_activity_calling" >
+        </activity>
     </application>
 
 </manifest>

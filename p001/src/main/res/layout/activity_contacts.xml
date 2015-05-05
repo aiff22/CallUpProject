@@ -22,6 +22,7 @@
             android:layout_height="60dp"
             android:id="@+id/imageButton"
             android:layout_gravity="right"
+            android:src="@android:drawable/ic_popup_sync"
             style="?android:attr/borderlessButtonStyle"
             android:layout_marginStart="5dp"
             android:background="@android:color/holo_green_light"
