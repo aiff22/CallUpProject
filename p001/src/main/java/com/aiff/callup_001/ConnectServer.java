@@ -156,7 +156,6 @@ class ConnectServer extends AsyncTask<String, Void, String> {
 
                     if (reqType.equals("hello")) g.setNewEvents(data);
 
-                    Log.d("myLogs", String.valueOf(data));
                     resp = "1";
 
                 } catch (ClassNotFoundException e) {

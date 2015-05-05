@@ -2,6 +2,7 @@ package com.aiff.callup_001;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -274,7 +275,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                         try {
                             String res = new ConnectServer().execute(args).get();
-                            if (res.equals(1)) {
+                            if (res.equals("1")) {
                                 g.addContact(d.get(1), "deleteFromFriends");
                                 Toast.makeText(ContactsActivity.this, "Contact deleted", Toast.LENGTH_SHORT).show();
                             } else
@@ -484,9 +485,12 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                         List<List<String>> data = g.getNewEvents();
 
                         for (int i = 0; i < data.size(); i++) {
-                            List<String> d = data.get(i);
+
+                            List<String> d = new ArrayList<String>(data.get(i));
                             if (d.get(0).equals("events")) {
+
                                 switch (d.get(3)) {
+
                                     case "1":   // new message
                                         d.set(0, "messages");
                                         d.set(3, "2");
@@ -518,16 +522,35 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                                     case "4":   // new contact
 
+                                        if(g.findContact(d.get(1)).equals("-1")){
+                                            d.set(0, "contacts");
+                                            d.remove(4);
+                                            List<List<String>> addData4 = new ArrayList<>();
+                                            addData4.add(d);
+                                            g.setData(addData4);
+                                        } else g.addContact(d.get(1), "contactRequest");
+
                                         Toast.makeText(ContactsActivity.this, "New contact request", Toast.LENGTH_SHORT).show();
                                         break;
 
+                                    case "5":
+                                        g.addContact(d.get(1), "confirm");
+                                        Toast.makeText(ContactsActivity.this, "Contact " + String.valueOf(g.findContact(d.get(1))) +
+                                                " accepted your friend request", Toast.LENGTH_SHORT).show();
+                                        break;
+
+                                    case "6":
+                                        g.addContact(d.get(1), "deleteFromFriends");
+                                        break;
+
                                 }
-                            } else {
-                                /*for (int j = 1; j < d.size(); j++) {
-                                    if (!online.get(j).equals(d.get(j))){
-                                        online.set(j, d.get(j));
-                                    }
-                                }*/
+                            } if (d.get(0).equals("friends_online")) {
+                                List<List<String>> addContacts = new ArrayList<>();
+                                addContacts.add(d);
+                                g.setData(addContacts);
+                                TabActivity tab = (TabActivity) getParent();
+                                tab.getTabHost().setCurrentTabByTag("tag2");
+                                tab.getTabHost().setCurrentTabByTag("tag1");
                             }
                         }
 

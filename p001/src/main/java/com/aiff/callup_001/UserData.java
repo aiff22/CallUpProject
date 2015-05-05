@@ -16,7 +16,6 @@ public class UserData {
     private List<List<String>> data_events = new ArrayList<>();
     private List<List<String>> new_events = new ArrayList<>();
     private List<String> friends_online = new ArrayList<>();
-    private List<String> last_friends_online = new ArrayList<>();
 
     private UserData() {
     }
@@ -45,11 +44,10 @@ public class UserData {
         return this.friends_online;
     }
 
-    public List<String> getLastFriendsOnline() {
-        return this.last_friends_online;
-    }
 
-    public void setNewEvents(List<List<String>> data) {this.new_events = data; }
+    public void setNewEvents(List<List<String>> data) {
+        this.new_events = data;
+    }
 
 
     public void setData(List<List<String>> data) {
@@ -60,33 +58,30 @@ public class UserData {
 
                 case "contacts":
                     this.data_contacts.add(d);
+                    Log.d("UserDataLogs:contacts", String.valueOf(this.data_contacts));
                     break;
 
                 case "calls":
                     this.data_calls.add(d);
+                    Log.d("UserDataLogs:calls", String.valueOf(this.data_calls));
                     break;
 
                 case "messages":
                     this.data_messages.add(d);
+                    Log.d("UserDataLogs:messages", String.valueOf(this.data_messages));
                     break;
 
                 case "events":
-
                     this.data_events.add(d);
+                    Log.d("UserDataLogs:events", String.valueOf(this.data_events));
                     break;
 
                 case "friends_online":
-
-                    this.last_friends_online = this.friends_online;
                     this.friends_online = d;
+                    Log.d("UserDataLogs:friends", String.valueOf(this.friends_online));
+                    break;
             }
         }
-
-        Log.d("UserDataLogs:contacts", String.valueOf(this.data_contacts));
-        Log.d("UserDataLogs:calls", String.valueOf(this.data_calls));
-        Log.d("UserDataLogs:messages", String.valueOf(this.data_messages));
-        Log.d("UserDataLogs:events", String.valueOf(this.data_events));
-        Log.d("UserDataLogs:friends", String.valueOf(this.friends_online));
 
     }
 
@@ -99,13 +94,13 @@ public class UserData {
 
     public void setMessageRead(String contact_number) {
         for (int i = 0; i < data_messages.size(); i++) {
-             if (data_messages.get(i).get(1).equals(contact_number))
-                 data_messages.get(i).set(3, "3");
+            if (data_messages.get(i).get(1).equals(contact_number))
+                data_messages.get(i).set(3, "3");
         }
 
         for (int i = 0; i < data_events.size(); i++) {
-             if (data_events.get(i).get(3).equals("1") && data_events.get(i).get(1).equals(contact_number))
-                 data_events.remove(i);
+            if (data_events.get(i).get(3).equals("1") && data_events.get(i).get(1).equals(contact_number))
+                data_events.remove(i);
         }
     }
 
@@ -120,7 +115,7 @@ public class UserData {
     public void addContact(String contact_number, String action) {
         for (int i = 0; i < data_contacts.size(); i++) {
             if (data_contacts.get(i).get(1).equals(contact_number))
-                switch(action){
+                switch (action) {
                     case "add":
                         data_contacts.get(i).set(3, "0");
                         break;
@@ -135,6 +130,10 @@ public class UserData {
 
                     case "confirm":
                         data_contacts.get(i).set(3, "2");
+                        break;
+
+                    case "contactRequest":
+                        data_contacts.get(i).set(3, "3");
                         break;
                 }
         }
