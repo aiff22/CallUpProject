@@ -556,6 +556,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                         args[0] = "respcall";
                                         args[1] = storedLogin;
                                         args[2] = storedPass;
+                                        args[3] = d.get(1);
 
                                         AlertDialog.Builder alert = new AlertDialog.Builder(ContactsActivity.this);
 
@@ -566,9 +567,11 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                         alert.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                args[3] = "1";
+                                                args[4] = "1";
                                                 try {
                                                     String res = new ConnectServer().execute(args).get();
+
+
                                                     if (!res.equals("-1") && !res.equals("-3")){
                                                         Intent intentStartCall = new Intent(ContactsActivity.this, CallingActivity.class);
                                                         intentStartCall.putExtra("contact", d.get(1));
@@ -588,7 +591,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                         alert.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                args[3] = "0";
+                                                args[4] = "0";
                                                 try {
                                                     String res = new ConnectServer().execute(args).get();
                                                 } catch (InterruptedException e) {

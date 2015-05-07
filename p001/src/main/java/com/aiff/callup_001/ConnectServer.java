@@ -150,7 +150,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                 nameValuePairs.add(new BasicNameValuePair("id_contact",
                         args[3]));
                 nameValuePairs.add(new BasicNameValuePair("decision",
-                        args[0]));
+                        args[4]));
             }
 
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
