@@ -20,6 +20,8 @@ public class CallingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calling);
 
+        // -- Get room number and contact id -->
+
         Intent intent = getIntent();
         String contact_number = intent.getStringExtra("contact");
         String room = intent.getStringExtra("room");
@@ -31,6 +33,8 @@ public class CallingActivity extends Activity {
         if (!g.findContact(contact_number).equals("-1"))
             contact_name.setText(g.findContact(contact_number));
 
+        // -- Give permissions to the webviewer -->
+
         WebView mWebView = (WebView) findViewById(R.id.webView);
         mWebView.getSettings().setJavaScriptEnabled(true);
 
@@ -41,8 +45,13 @@ public class CallingActivity extends Activity {
             }
         });
 
+        // -- Load web page -->
+
         String adress = "http://10.0.2.2:8080/basic/?r=" + room;
+        //String adress = "http://gmail.com";
         mWebView.loadUrl(adress);
+
+        // -- If button "End" is pressed, then finish activity -->
 
         Button btnEndCall = (Button) findViewById(R.id.btnEndCall);
         btnEndCall.setOnClickListener(new View.OnClickListener() {

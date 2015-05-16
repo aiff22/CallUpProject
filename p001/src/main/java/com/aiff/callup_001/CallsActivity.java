@@ -24,17 +24,18 @@ public class CallsActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calls);
 
+        // -- Get calls data -->
+
         UserData g = UserData.getInstance();
         List<List<String>> data = g.getCalls();
-        Log.d("ContactsLogs", String.valueOf(data));
-        Log.d("ContactsLogs", String.valueOf(data.size()));
 
         colors[0] = Color.parseColor("#559966CC");
         colors[1] = Color.parseColor("#55336699");
 
         LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
-
         LayoutInflater ltInflater = getLayoutInflater();
+
+        // -- Fill the frames -->
 
         for (int i = data.size() - 1; i >= 0; i--) {
 
@@ -47,19 +48,19 @@ public class CallsActivity extends Activity implements View.OnClickListener {
             tvName.setText(d.get(1));
             if (!g.findContact(d.get(1)).equals("-1")) tvName.setText(g.findContact(d.get(1)));
 
-            TextView tvPosition = (TextView) item.findViewById(R.id.tvPosition);
-            tvPosition.setText(d.get(2));
-            TextView tvSalary = (TextView) item.findViewById(R.id.tvSalary);
-            tvSalary.setText(d.get(3));
+            TextView callDate = (TextView) item.findViewById(R.id.tvPosition);
+            callDate.setText(d.get(2));
+            TextView callType = (TextView) item.findViewById(R.id.tvSalary);
+            callType.setText(d.get(3));
 
             if (d.get(3).equals("3")){
-                tvSalary.setText("missing");
+                callType.setText("missing");
                 item.setBackgroundColor(colors[0]);
             }  else {
 
                 if (d.get(3).equals("1"))
-                    tvSalary.setText("outcoming");
-                else tvSalary.setText("incoming");
+                    callType.setText("outcoming");
+                else callType.setText("incoming");
 
                 item.setBackgroundColor(colors[1]);
             }
@@ -81,7 +82,7 @@ public class CallsActivity extends Activity implements View.OnClickListener {
         }
     }
 
-
+    // -- Make options visible or invisible -->
 
     @Override
     public void onClick(View v) {

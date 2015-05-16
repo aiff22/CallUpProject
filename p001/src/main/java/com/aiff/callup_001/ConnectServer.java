@@ -29,6 +29,8 @@ class ConnectServer extends AsyncTask<String, Void, String> {
         HttpClient client = new DefaultHttpClient();
         HttpPost post = new HttpPost("http://10.0.2.2:8080/requestServlet");
 
+        // -- Switch between different request types -->
+
         try {
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
@@ -153,12 +155,17 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[4]));
             }
 
+            // -- Send request to the server -->
+
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
+
+            // -- Read response -->
 
             if (reqType.equals("login") || reqType.equals("register") || reqType.equals("hello")) {
 
                 ObjectInputStream stream = new ObjectInputStream(response.getEntity().getContent());
+
                 try {
                     List<List<String>> data = (List<List<String>>) stream.readObject();
 

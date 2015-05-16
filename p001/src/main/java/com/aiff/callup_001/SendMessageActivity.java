@@ -11,9 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,23 +33,26 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
     private Timer mTimer;
     private MyTimerTask mMyTimerTask;
+    Integer smsNum;
+    LinearLayout linLayout;
+    ScrollView scrollView;
 
-
-    Integer smsNum = 0;
-
-    /**
-     * Called when the activity is first created.
-     */
     public void onCreate(Bundle savedInstanceState) {
+
+        smsNum = 0;
+
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_send_message);
 
         Intent intent = getIntent();
         contact_number = intent.getStringExtra("contact");
 
+        // -- If user is not specified, add an address bar -->
+
         if (contact_number.equals("-1")) {
-            ((LinearLayout) findViewById(R.id.linLayoutNew)).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.ContactName)).setVisibility(View.GONE);
+            (findViewById(R.id.linLayoutNew)).setVisibility(View.VISIBLE);
+            (findViewById(R.id.ContactName)).setVisibility(View.GONE);
         }
 
         UserData g = UserData.getInstance();
@@ -57,22 +63,25 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
         colors[0] = Color.parseColor("#559966CC");
         colors[1] = Color.parseColor("#55336699");
 
-        LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
+        scrollView = (ScrollView) findViewById(R.id.scroll);
+        scrollView.post(new Runnable() {
+
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+
+        linLayout = (LinearLayout) findViewById(R.id.linLayout);
         TextView contact_name = (TextView) findViewById(R.id.ContactName);
+        Button btnSend = (Button) findViewById(R.id.button4);
+        LayoutInflater ltInflater = getLayoutInflater();
+
+        btnSend.setOnClickListener(this);
         contact_name.setText(contact_number);
 
-        List<List<String>> contacts = g.getContacts();
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).get(1).equals(contact_number)) {
-                contact_name.setText(contacts.get(i).get(2));
-                break;
-            }
-        }
-
-        Button btnSend = (Button) findViewById(R.id.button4);
-        btnSend.setOnClickListener(this);
-
-        LayoutInflater ltInflater = getLayoutInflater();
+        if (!g.findContact(contact_number).equals("-1"))
+            contact_name.setText(g.findContact(contact_number));
 
         for (int i = 0; i < data.size(); i++) {
 
@@ -84,20 +93,27 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                 View item;
 
                 if (d.get(3).equals("1")) {
+                    Log.d("Outcoming message", d.get(3));
                     item = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
-                    ((TextView) item.findViewById(R.id.textView8)).setBackgroundColor(colors[0]);
+                    //(item.findViewById(R.id.textView8)).setBackgroundColor(colors[0]);
                 } else {
+                    Log.d("Incoming message", d.get(3));
                     item = ltInflater.inflate(R.layout.item_message_left, linLayout, false);
-                    ((TextView) item.findViewById(R.id.textView8)).setBackgroundColor(colors[0]);
+                    //(item.findViewById(R.id.textView8)).setBackgroundColor(colors[1]);
                 }
 
                 TextView msgText = (TextView) item.findViewById(R.id.textView8);
                 msgText.setText(d.get(2));
                 item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                // item.requestFocus();
+                // InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                // imm.showSoftInput(item, InputMethodManager.SHOW_IMPLICIT);
                 linLayout.addView(item);
 
             }
         }
+
+        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 
         mTimer = new Timer();
         mMyTimerTask = new MyTimerTask();
@@ -149,6 +165,7 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                 default:
                     List<List<String>> newMsg = new ArrayList<>();
                     List<String> item = new ArrayList<>();
+
                     item.add("messages");
                     item.add(contact_number);
                     item.add(text);
@@ -161,11 +178,28 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
                     Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
 
-                    Intent intentSendMessage = new Intent(SendMessageActivity.this, SendMessageActivity.class);
-                    intentSendMessage.putExtra("contact", contact_number);
-                    startActivity(intentSendMessage);
-                    SendMessageActivity.this.finish();
+                    LayoutInflater ltInflater = getLayoutInflater();
+                    View newItem;
+                    newItem = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
+                    TextView msgText = (TextView) newItem.findViewById(R.id.textView8);
+                    msgText.setText(text);
+                    newItem.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    newItem.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(newItem, InputMethodManager.SHOW_IMPLICIT);
+                    linLayout.addView(newItem);
 
+                    smsNum++;
+                    linLayout.refreshDrawableState();
+                    ((EditText) findViewById(R.id.editText5)).setText("");
+
+                    scrollView.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
 
             }
 
@@ -198,10 +232,61 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                         if (data.get(i).get(1).equals(contact_number)) sms++;
 
                     if (sms != smsNum) {
-                        Intent intentSendMessage = new Intent(SendMessageActivity.this, SendMessageActivity.class);
-                        intentSendMessage.putExtra("contact", contact_number);
-                        startActivity(intentSendMessage);
-                        SendMessageActivity.this.finish();
+
+
+                        int max_sms = sms;
+                        sms = 0;
+                        LayoutInflater ltInflater = getLayoutInflater();
+
+                        for (int i = 0; i < data.size(); i++) {
+
+                            List<String> d = data.get(i);
+
+                            if (d.get(1).equals(contact_number)) {
+
+                                sms++;
+
+                                if (sms > smsNum) {
+
+                                    View item;
+
+                                    if (d.get(3).equals("1")) {
+                                        item = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
+                                    } else {
+                                        item = ltInflater.inflate(R.layout.item_message_left, linLayout, false);
+                                    }
+
+                                    TextView msgText = (TextView) item.findViewById(R.id.textView8);
+                                    msgText.setText(d.get(2));
+                                    item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+                                    if (max_sms == sms) {
+                                        item.requestFocus();
+                                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        imm.showSoftInput(item, InputMethodManager.SHOW_IMPLICIT);
+
+                                    }
+
+                                    linLayout.addView(item);
+                                }
+
+                            }
+                        }
+
+                        smsNum = sms;
+                        linLayout.refreshDrawableState();
+                        scrollView.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                            }
+                        });
+
+                        markMessagesAsRead(contact_number);
+
+
+                        Log.d("SendMessage", sms.toString() + ", " + smsNum.toString());
                     }
                 }
             });

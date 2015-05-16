@@ -94,7 +94,7 @@ public class UserData {
 
     public void setMessageRead(String contact_number) {
         for (int i = 0; i < data_messages.size(); i++) {
-            if (data_messages.get(i).get(1).equals(contact_number))
+            if (data_messages.get(i).get(1).equals(contact_number) && data_messages.get(i).get(3).equals("2"))
                 data_messages.get(i).set(3, "3");
         }
 

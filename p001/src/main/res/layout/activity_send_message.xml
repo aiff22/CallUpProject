@@ -57,7 +57,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ContactName"
         android:layout_above="@+id/editText5"
-        android:id="@+id/scroll">
+        android:id="@+id/scroll"
+        android:fillViewport="true">
         <LinearLayout
             android:id="@+id/linLayout"
             android:layout_width="match_parent"
