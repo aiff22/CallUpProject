@@ -140,7 +140,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             }
 
             item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
-            item.setBackgroundColor(colors[0]);
+            //item.setBackgroundColor(colors[0]);
 
             // -- Make a call -->
 

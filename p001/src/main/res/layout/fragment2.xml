@@ -30,11 +30,13 @@
         android:layout_width="95dp"
         android:layout_height="60dp"
         android:text="I Want Another!"
+        android:textStyle="italic"
         android:id="@+id/button2"
         android:layout_marginTop="15dp"
         android:layout_below="@+id/textView"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp" />
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/rounded_corner2"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -83,12 +85,17 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         android:text="Register"
         android:id="@+id/button3"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:textStyle="italic"
+        android:background="@drawable/rounded_corner2"/>
 
     <TextView
         android:layout_width="wrap_content"

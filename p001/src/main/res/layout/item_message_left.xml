@@ -27,7 +27,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:layout_weight="4"
-            android:background="@drawable/rounded_corner" />
+            android:background="@drawable/rounded_corner2" />
 
         <TextView
             android:layout_width="wrap_content"
