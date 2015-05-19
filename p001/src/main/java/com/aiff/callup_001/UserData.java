@@ -58,22 +58,22 @@ public class UserData {
 
                 case "contacts":
                     this.data_contacts.add(d);
-                    Log.d("UserDataLogs:contacts", String.valueOf(this.data_contacts));
+                    // Log.d("UserDataLogs:contacts", String.valueOf(this.data_contacts));
                     break;
 
                 case "calls":
                     this.data_calls.add(d);
-                    Log.d("UserDataLogs:calls", String.valueOf(this.data_calls));
+                    // Log.d("UserDataLogs:calls", String.valueOf(this.data_calls));
                     break;
 
                 case "messages":
                     this.data_messages.add(d);
-                    Log.d("UserDataLogs:messages", String.valueOf(this.data_messages));
+                    // Log.d("UserDataLogs:messages", String.valueOf(this.data_messages));
                     break;
 
                 case "events":
                     this.data_events.add(d);
-                    Log.d("UserDataLogs:events", String.valueOf(this.data_events));
+                    // Log.d("UserDataLogs:events", String.valueOf(this.data_events));
                     break;
 
                 case "friends_online":
@@ -144,6 +144,29 @@ public class UserData {
             if (data_calls.get(i).get(1).equals(contact_number) && data_calls.get(i).get(3).equals(type)) {
                 data_calls.remove(i);
             }
+    }
+
+    public Integer findFriendStatus(String contact_number) {
+        int iter_friend = 1;
+        for (int i = 0; i < data_contacts.size(); i++) {
+            if (data_contacts.get(i).get(1).equals(contact_number) && data_contacts.get(i).get(3).equals("2"))
+                return friends_online.get(iter_friend).equals("true")? 1:0;
+            if (data_contacts.get(i).get(3).equals("2"))
+                iter_friend++;
+        }
+        return -1;
+    }
+
+    public void delMsg(String contact_number, String type) {
+        for (int i = 0; i < data_messages.size(); i++)
+            if (data_messages.get(i).get(1).equals(contact_number))
+                data_messages.remove(i);
+    }
+
+    public void delEvent(String contact_number, String type) {
+        for (int i = 0; i < data_events.size(); i++)
+            if (data_events.get(i).get(1).equals(contact_number) && data_events.get(i).get(3).equals(type))
+                data_events.remove(i);
     }
 }
 

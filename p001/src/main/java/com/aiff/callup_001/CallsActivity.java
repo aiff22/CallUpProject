@@ -1,18 +1,25 @@
 package com.aiff.callup_001;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.CallLog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +29,9 @@ public class CallsActivity extends Activity implements View.OnClickListener {
     final String userLoginKey = "com.aiff.callup_001.app.login";
     final String userPassKey = "com.aiff.callup_001.app.pass";
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calls);
@@ -35,6 +44,14 @@ public class CallsActivity extends Activity implements View.OnClickListener {
 
         final LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
         LayoutInflater ltInflater = getLayoutInflater();
+
+        Button btnNewCall = (Button) findViewById(R.id.btnNewCall);
+        btnNewCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeNewCall();
+            }
+        });
 
         // -- Fill the frames -->
 
@@ -52,6 +69,11 @@ public class CallsActivity extends Activity implements View.OnClickListener {
 
             TextView callDate = (TextView) item.findViewById(R.id.tvPosition);
             callDate.setText(d.get(2));
+
+            ImageView contactStatus = (ImageView) item.findViewById(R.id.contactStatus);
+            Integer status = g.findFriendStatus(d.get(1));
+            if (status == 1) contactStatus.setImageResource(getResources().getIdentifier("@android:drawable/presence_online", null, null));
+            if (status == 0) contactStatus.setImageResource(getResources().getIdentifier("@android:drawable/presence_invisible", null, null));
 
             if (d.get(3).equals("3"))
                 imageView.setImageResource(getResources().getIdentifier("@android:drawable/sym_call_missed", null, null));
@@ -143,5 +165,44 @@ public class CallsActivity extends Activity implements View.OnClickListener {
 
     }
 
+    private void makeNewCall() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(CallsActivity.this);
 
+        final EditText textPhone = new EditText(CallsActivity.this);
+        final Context mContext = CallsActivity.this;
+
+        textPhone.setHint("Phone Number");
+        textPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+        alert.setTitle("New Call");
+
+        LinearLayout ll = new LinearLayout(CallsActivity.this);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.addView(textPhone);
+        alert.setView(ll);
+
+        // -- Processing clicks on the buttons -->
+
+        alert.setNegativeButton("Call", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                if (!String.valueOf(textPhone.getText()).equals(""))
+                    ContactsActivity.makeCall(String.valueOf(textPhone.getText()), mContext);
+                else {
+                    Toast.makeText(mContext, "Enter phone number", Toast.LENGTH_SHORT).show();
+                    makeNewCall();
+                }
+            }
+
+        });
+
+        alert.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        alert.show();
+
+    }
 }

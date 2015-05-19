@@ -33,8 +33,6 @@ import java.util.concurrent.ExecutionException;
 
 public class ContactsActivity extends Activity implements View.OnClickListener {
 
-    int[] colors = new int[2];
-
     private Timer mTimer;
     private MyTimerTask mMyTimerTask;
 
@@ -57,8 +55,6 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         Log.d("ContactsLogs", String.valueOf(data));
         Log.d("ContactsLogs", String.valueOf(data.size()));
-
-        colors[0] = Color.parseColor("#FFFFCC");
 
         // -- Adding new contact -->
 
@@ -294,9 +290,9 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                 List<List<String>> addContacts = new ArrayList<>();
                                 addContacts.add(d);
                                 g.setData(addContacts);
-                    //          TabActivity tab = (TabActivity) getParent();
-                    //          tab.getTabHost().setCurrentTabByTag("tag2");
-                    //          tab.getTabHost().setCurrentTabByTag("tag1");
+                                //          TabActivity tab = (TabActivity) getParent();
+                                //          tab.getTabHost().setCurrentTabByTag("tag2");
+                                //          tab.getTabHost().setCurrentTabByTag("tag1");
                             }
                         }
 
@@ -435,7 +431,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                         Toast.makeText(mContext, "System error occurred. Try again later.", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
-                }   else {
+                } else {
                     if (args[4].equals(storedLogin)) {
                         Toast.makeText(mContext, "You can not add yourself to contacts", Toast.LENGTH_SHORT).show();
                         args[4] = "";
@@ -522,7 +518,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
     }
 
-    public static void makeCall(String phone, Context mContext) {
+    public static void makeCall(final String phone, final Context mContext) {
 
         SharedPreferences prefs = mContext.getSharedPreferences(
                 "com.aiff.callup_001.app", Context.MODE_PRIVATE);
@@ -533,12 +529,18 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         String storedLogin = prefs.getString(userLoginKey, new String());
         String storedPass = prefs.getString(userPassKey, new String());
 
-        String[] args = new String[6];
+        final String[] args = new String[6];
         args[0] = "call";
         args[1] = storedLogin;
         args[2] = storedPass;
         args[3] = phone;
         final UserData g = UserData.getInstance();
+
+        if (phone.equals(storedLogin)) {
+            Toast.makeText(mContext, "Calling yourself?\n Ha-Ha *_*", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Calling to " + phone + "...");
@@ -549,51 +551,63 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         final AlertDialog dlg = builder.create();
         dlg.show();
 
-        try {
+        //new Thread(new Runnable() {
+        //    @Override
+        //    public void run() {
 
-            List<List<String>> data = new ArrayList<List<String>>();
-            List<String> d = new ArrayList<String>();
+                try {
 
-            d.add("calls");
-            d.add(phone);
-            d.add(String.valueOf(new Timestamp(new Date().getTime())));
-            d.add("1");
-            data.add(d);
+                    List<List<String>> data = new ArrayList<List<String>>();
+                    List<String> d = new ArrayList<String>();
 
-            g.delCall(phone, "1");
-            g.setData(data);
+                    d.add("calls");
+                    d.add(phone);
+                    d.add(String.valueOf(new Timestamp(new Date().getTime())));
+                    d.add("1");
+                    data.add(d);
 
-            String res = new ConnectServer().execute(args).get();
-            Log.d("Room returned", res);
+                    g.delCall(phone, "1");
+                    g.setData(data);
 
-            if (!res.equals("-1") && !res.equals("-2") && !!res.equals("-2") && !res.equals("-4")) {
-                dlg.dismiss();
-                Intent intentStartCall = new Intent(mContext, CallingActivity.class);
-                intentStartCall.putExtra("contact", phone);
-                intentStartCall.putExtra("room", res);
-                mContext.startActivity(intentStartCall);
+                    String res = new ConnectServer().execute(args).get();
+                    Log.d("Room returned", res);
 
-            } else {
-                dlg.dismiss();
-                if (res.equals("-1"))
-                    Toast.makeText(mContext, "No response", Toast.LENGTH_SHORT).show();
-                else if (res.equals("-2"))
-                    Toast.makeText(mContext, "Contact is busy", Toast.LENGTH_SHORT).show();
-                else if (res.equals("-3"))
-                    Toast.makeText(mContext, "Authentication error. Please, try again later", Toast.LENGTH_SHORT).show();
-                else if (res.equals("-4"))
-                    Toast.makeText(mContext, "Contact not found", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(mContext, "An error occurred", Toast.LENGTH_SHORT).show();
-            }
+                    if (!res.equals("-1") && !res.equals("-2") && !!res.equals("-2") && !res.equals("-4")) {
+                        dlg.dismiss();
+                        Intent intentStartCall = new Intent(mContext, CallingActivity.class);
+                        intentStartCall.putExtra("contact", phone);
+                        intentStartCall.putExtra("room", res);
+                        mContext.startActivity(intentStartCall);
 
-        } catch (InterruptedException e) {
-            Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+                    } else {
+                       //mContext.runOnUiThread(new Runnable() {
+                       //     public void run() {
+
+                       //     }
+                       // });
+                        dlg.dismiss();
+                        if (res.equals("-1"))
+                            Toast.makeText(mContext, "No response", Toast.LENGTH_SHORT).show();
+                        else if (res.equals("-2"))
+                            Toast.makeText(mContext, "Contact is busy", Toast.LENGTH_SHORT).show();
+                        else if (res.equals("-3"))
+                            Toast.makeText(mContext, "Authentication error. Please, try again later", Toast.LENGTH_SHORT).show();
+                        else if (res.equals("-4"))
+                            Toast.makeText(mContext, "Contact not found", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(mContext, "An error occurred", Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (InterruptedException e) {
+                    Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+        //    }
+        //}).start();
 
     }
 
@@ -683,7 +697,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
-                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 1000)   return;
+                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 1000) return;
                 mLastClickTime[0] = SystemClock.elapsedRealtime();
 
                 try {

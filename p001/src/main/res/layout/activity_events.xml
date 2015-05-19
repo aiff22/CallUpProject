@@ -5,14 +5,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <ImageButton
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:id="@+id/imageButton"
-        android:src="@android:drawable/ic_popup_sync"
-        style="?android:attr/borderlessButtonStyle"
-        android:background="@android:color/holo_green_light"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,4 +16,5 @@
             android:orientation="vertical">
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

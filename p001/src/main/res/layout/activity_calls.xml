@@ -14,7 +14,7 @@
             android:text="new call"
             android:background="@drawable/rounded_corner3"
             style="?android:attr/borderlessButtonStyle"
-            android:id="@+id/button5" />
+            android:id="@+id/btnNewCall" />
 
     </LinearLayout>
     <ScrollView

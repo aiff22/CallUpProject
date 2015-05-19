@@ -184,6 +184,7 @@ class ConnectServer extends AsyncTask<String, Void, String> {
             // -- Send request to the server -->
 
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
             HttpResponse response = client.execute(post);
 
             // -- Read response -->

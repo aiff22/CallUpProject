@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -28,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 
 public class SendMessageActivity extends Activity implements View.OnClickListener {
 
-    int[] colors = new int[2];
     String contact_number;
 
     private Timer mTimer;
@@ -57,11 +55,15 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
 
         UserData g = UserData.getInstance();
         List<List<String>> data = g.getMessages();
+        ImageView contactStatus = (ImageView) findViewById(R.id.contactStatus);
+
+        Integer status = g.findFriendStatus(contact_number);
+        if (status == 1)
+            contactStatus.setImageResource(getResources().getIdentifier("@android:drawable/presence_online", null, null));
+        if (status == 0)
+            contactStatus.setImageResource(getResources().getIdentifier("@android:drawable/presence_invisible", null, null));
 
         if (!contact_number.equals("-1")) markMessagesAsRead(contact_number);
-
-        colors[0] = Color.parseColor("#559966CC");
-        colors[1] = Color.parseColor("#55336699");
 
         scrollView = (ScrollView) findViewById(R.id.scroll);
         scrollView.post(new Runnable() {
@@ -105,9 +107,6 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
                 TextView msgText = (TextView) item.findViewById(R.id.textView8);
                 msgText.setText(d.get(2));
                 item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                // item.requestFocus();
-                // InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                // imm.showSoftInput(item, InputMethodManager.SHOW_IMPLICIT);
                 linLayout.addView(item);
 
             }
@@ -140,77 +139,79 @@ public class SendMessageActivity extends Activity implements View.OnClickListene
         String storedPass = prefs.getString(userPassKey, new String());
         String text = String.valueOf(((EditText) findViewById(R.id.editText5)).getText());
 
-        String[] args = new String[6];
-        args[0] = "msg";
-        args[1] = storedLogin;
-        args[2] = storedPass;
-        args[3] = contact_number;
-        args[4] = text;
+        if (!text.equals("")) {
 
-        try {
-            String res = new ConnectServer().execute(args).get();
-            switch (res) {
-                case "-3":
-                    Toast.makeText(this, "System error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
-                    break;
+            String[] args = new String[6];
+            args[0] = "msg";
+            args[1] = storedLogin;
+            args[2] = storedPass;
+            args[3] = contact_number;
+            args[4] = text;
 
-                case "-1":
-                    Toast.makeText(this, "Authentication failure. Please, try again later.", Toast.LENGTH_SHORT).show();
-                    break;
+            try {
+                String res = new ConnectServer().execute(args).get();
+                switch (res) {
+                    case "-3":
+                        Toast.makeText(this, "System error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+                        break;
 
-                case "-2":
-                    Toast.makeText(this, "Contact " + contact_number + " not found.", Toast.LENGTH_SHORT).show();
-                    break;
+                    case "-1":
+                        Toast.makeText(this, "Authentication failure. Please, try again later.", Toast.LENGTH_SHORT).show();
+                        break;
 
-                default:
-                    List<List<String>> newMsg = new ArrayList<>();
-                    List<String> item = new ArrayList<>();
+                    case "-2":
+                        Toast.makeText(this, "Contact " + contact_number + " not found.", Toast.LENGTH_SHORT).show();
+                        break;
 
-                    item.add("messages");
-                    item.add(contact_number);
-                    item.add(text);
-                    item.add("1");
-                    item.add(res);
-                    newMsg.add(item);
+                    default:
+                        List<List<String>> newMsg = new ArrayList<>();
+                        List<String> item = new ArrayList<>();
 
-                    UserData g = UserData.getInstance();
-                    g.setData(newMsg);
+                        item.add("messages");
+                        item.add(contact_number);
+                        item.add(text);
+                        item.add("1");
+                        item.add(res);
+                        newMsg.add(item);
 
-                    Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
+                        UserData g = UserData.getInstance();
+                        g.setData(newMsg);
 
-                    LayoutInflater ltInflater = getLayoutInflater();
-                    View newItem;
-                    newItem = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
-                    TextView msgText = (TextView) newItem.findViewById(R.id.textView8);
-                    msgText.setText(text);
-                    newItem.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    newItem.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(newItem, InputMethodManager.SHOW_IMPLICIT);
-                    linLayout.addView(newItem);
+                        Toast.makeText(this, "Message Sent", Toast.LENGTH_SHORT).show();
 
-                    smsNum++;
-                    linLayout.refreshDrawableState();
-                    ((EditText) findViewById(R.id.editText5)).setText("");
+                        LayoutInflater ltInflater = getLayoutInflater();
+                        View newItem;
+                        newItem = ltInflater.inflate(R.layout.item_message_right, linLayout, false);
+                        TextView msgText = (TextView) newItem.findViewById(R.id.textView8);
+                        msgText.setText(text);
+                        newItem.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                        newItem.requestFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(newItem, InputMethodManager.SHOW_IMPLICIT);
+                        linLayout.addView(newItem);
 
-                    scrollView.post(new Runnable() {
+                        smsNum++;
+                        linLayout.refreshDrawableState();
+                        ((EditText) findViewById(R.id.editText5)).setText("");
 
-                        @Override
-                        public void run() {
-                            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                        }
-                    });
+                        scrollView.post(new Runnable() {
 
+                            @Override
+                            public void run() {
+                                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                            }
+                        });
+
+                }
+
+            } catch (InterruptedException e) {
+                Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
-
-        } catch (InterruptedException e) {
-            Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            Toast.makeText(this, "An error occurred. Please, try again later.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
         }
-
     }
 
     class MyTimerTask extends TimerTask {
