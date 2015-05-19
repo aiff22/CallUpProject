@@ -155,6 +155,32 @@ class ConnectServer extends AsyncTask<String, Void, String> {
                         args[4]));
             }
 
+            if (reqType.equals("delcall")) {
+                nameValuePairs.add(new BasicNameValuePair("request_type",
+                        "delcall"));
+                nameValuePairs.add(new BasicNameValuePair("login",
+                        args[1]));
+                nameValuePairs.add(new BasicNameValuePair("pass",
+                        args[2]));
+                nameValuePairs.add(new BasicNameValuePair("id_contact",
+                        args[3]));
+                nameValuePairs.add(new BasicNameValuePair("type",
+                        args[4]));
+            }
+
+            if (reqType.equals("delmsg")) {
+                nameValuePairs.add(new BasicNameValuePair("request_type",
+                        "delmsg"));
+                nameValuePairs.add(new BasicNameValuePair("login",
+                        args[1]));
+                nameValuePairs.add(new BasicNameValuePair("pass",
+                        args[2]));
+                nameValuePairs.add(new BasicNameValuePair("id_contact",
+                        args[3]));
+                nameValuePairs.add(new BasicNameValuePair("type",
+                        args[4]));
+            }
+
             // -- Send request to the server -->
 
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));

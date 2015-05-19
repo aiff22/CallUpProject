@@ -47,6 +47,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        final Context mContext = ContactsActivity.this;
 
         // -- Get data about contacts -->
 
@@ -65,7 +66,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         addContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewContact();
+                addNewContact("", mContext);
             }
         });
 
@@ -148,7 +149,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             btnCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    makeCall(d.get(1));
+                    makeCall(d.get(1), mContext);
                 }
             });
 
@@ -327,24 +328,28 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
     // -- Adding new contact -->
 
-    private void addNewContact() {
+    public static void addNewContact(String phone, final Context mContext) {
 
         // -- Creating new dialog -->
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(ContactsActivity.this);
+        final String userLoginKey = "com.aiff.callup_001.app.login";
+        final String userPassKey = "com.aiff.callup_001.app.pass";
 
-        final EditText textPhone = new EditText(ContactsActivity.this);
-        final EditText textName = new EditText(ContactsActivity.this);
-        final CheckBox beFriends = new CheckBox(ContactsActivity.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+
+        final EditText textPhone = new EditText(mContext);
+        final EditText textName = new EditText(mContext);
+        final CheckBox beFriends = new CheckBox(mContext);
 
         textPhone.setHint("Phone Number");
+        textPhone.setText(phone);
         textPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         textName.setHint("Name");
         beFriends.setText("Add to friends");
         beFriends.setChecked(false);
         alert.setTitle("New Contact");
 
-        LinearLayout ll = new LinearLayout(ContactsActivity.this);
+        LinearLayout ll = new LinearLayout(mContext);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.addView(textPhone);
         ll.addView(textName);
@@ -366,7 +371,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                 // -- Get user authentication data -->
 
-                SharedPreferences prefs = ContactsActivity.this.getSharedPreferences(
+                SharedPreferences prefs = mContext.getSharedPreferences(
                         "com.aiff.callup_001.app", Context.MODE_PRIVATE);
 
                 String storedLogin = prefs.getString(userLoginKey, new String());
@@ -385,7 +390,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
                 // -- Send add contact request -->
 
-                if (args[4].equals(storedLogin)) {
+                if (!args[4].equals(storedLogin) && !args[3].equals("") && !args[4].equals("")) {
 
                     try {
 
@@ -403,35 +408,42 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                                 data.add(d);
                                 g.setData(data);
 
-                                Toast.makeText(ContactsActivity.this, "Contact added", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Contact added", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case "2":
-                                Toast.makeText(ContactsActivity.this, "The contact is already in your phone book", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "The contact is already in your phone book", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case "3":
-                                Toast.makeText(ContactsActivity.this, "The contact is already your friend", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "The contact is already your friend", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case "-1":
-                                Toast.makeText(ContactsActivity.this, "Authentication error. Please, try again later", Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext, "Authentication error. Please, try again later", Toast.LENGTH_LONG).show();
                                 break;
 
                             case "-2":
-                                Toast.makeText(ContactsActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
-
+                                Toast.makeText(mContext, "User does not exist", Toast.LENGTH_SHORT).show();
+                                addNewContact("", mContext);
                         }
 
                     } catch (InterruptedException e) {
-                        Toast.makeText(ContactsActivity.this, "System error occurred. Try again later.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "System error occurred. Try again later.", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     } catch (ExecutionException e) {
-                        Toast.makeText(ContactsActivity.this, "System error occurred. Try again later.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "System error occurred. Try again later.", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
                 }   else {
-                    Toast.makeText(ContactsActivity.this, "You can not add yourself to contacts", Toast.LENGTH_SHORT).show();
+                    if (args[4].equals(storedLogin)) {
+                        Toast.makeText(mContext, "You can not add yourself to contacts", Toast.LENGTH_SHORT).show();
+                        args[4] = "";
+                    } else if (args[4].equals(""))
+                        Toast.makeText(mContext, "Enter contact's phone number", Toast.LENGTH_SHORT).show();
+                    else if (args[3].equals(""))
+                        Toast.makeText(mContext, "Enter contact's name", Toast.LENGTH_SHORT).show();
+                    addNewContact(args[4], mContext);
                 }
             }
         });
@@ -510,10 +522,13 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
     }
 
-    private void makeCall(String phone) {
+    public static void makeCall(String phone, Context mContext) {
 
-        SharedPreferences prefs = ContactsActivity.this.getSharedPreferences(
+        SharedPreferences prefs = mContext.getSharedPreferences(
                 "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+        final String userLoginKey = "com.aiff.callup_001.app.login";
+        final String userPassKey = "com.aiff.callup_001.app.pass";
 
         String storedLogin = prefs.getString(userLoginKey, new String());
         String storedPass = prefs.getString(userPassKey, new String());
@@ -525,15 +540,13 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         args[3] = phone;
         final UserData g = UserData.getInstance();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ContactsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Calling to " + phone + "...");
         if (!g.findContact(phone).equals("-1"))
             builder.setTitle("Calling to " + g.findContact(phone) + "...");
         builder.setCancelable(true);
 
         final AlertDialog dlg = builder.create();
-
-        Toast.makeText(ContactsActivity.this, "Call sent", Toast.LENGTH_SHORT).show();
         dlg.show();
 
         try {
@@ -546,36 +559,39 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             d.add(String.valueOf(new Timestamp(new Date().getTime())));
             d.add("1");
             data.add(d);
+
+            g.delCall(phone, "1");
             g.setData(data);
 
             String res = new ConnectServer().execute(args).get();
-            Toast.makeText(ContactsActivity.this, res, Toast.LENGTH_SHORT).show();
             Log.d("Room returned", res);
 
             if (!res.equals("-1") && !res.equals("-2") && !!res.equals("-2") && !res.equals("-4")) {
                 dlg.dismiss();
-                Intent intentStartCall = new Intent(ContactsActivity.this, CallingActivity.class);
+                Intent intentStartCall = new Intent(mContext, CallingActivity.class);
                 intentStartCall.putExtra("contact", phone);
                 intentStartCall.putExtra("room", res);
-                startActivity(intentStartCall);
+                mContext.startActivity(intentStartCall);
+
             } else {
+                dlg.dismiss();
                 if (res.equals("-1"))
-                    Toast.makeText(ContactsActivity.this, "No response", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "No response", Toast.LENGTH_SHORT).show();
                 else if (res.equals("-2"))
-                    Toast.makeText(ContactsActivity.this, "Contact is busy", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Contact is busy", Toast.LENGTH_SHORT).show();
                 else if (res.equals("-3"))
-                    Toast.makeText(ContactsActivity.this, "Authentication error. Please, try again later", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Authentication error. Please, try again later", Toast.LENGTH_SHORT).show();
                 else if (res.equals("-4"))
-                    Toast.makeText(ContactsActivity.this, "Contact not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Contact not found", Toast.LENGTH_SHORT).show();
                 else
-                    Toast.makeText(ContactsActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "An error occurred", Toast.LENGTH_SHORT).show();
             }
 
         } catch (InterruptedException e) {
-            Toast.makeText(ContactsActivity.this, "System error occurred", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         } catch (ExecutionException e) {
-            Toast.makeText(ContactsActivity.this, "System error occurred", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "System error occurred", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -715,20 +731,25 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         if (!g.findContact(phone).equals("-1"))
             alert.setTitle(g.findContact(phone) + " is calling...");
 
-        List<List<String>> data = new ArrayList<List<String>>();
-        List<String> d = new ArrayList<String>();
+        final List<List<String>> data = new ArrayList<List<String>>();
+        final List<String> d = new ArrayList<String>();
 
         d.add("calls");
         d.add(phone);
         d.add(time);
-        d.add("2");
-        data.add(d);
-        g.setData(data);
+
+        g.delCall(phone, "2");
+        g.delCall(phone, "3");
 
         alert.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 args[4] = "1";
+                d.add("2");
+                data.add(d);
+                g.setData(data);
+
                 try {
 
                     String res = new ConnectServer().execute(args).get();
@@ -753,7 +774,12 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         alert.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 args[4] = "0";
+                d.add("3");
+                data.add(d);
+                g.setData(data);
+
                 try {
                     String res = new ConnectServer().execute(args).get();
                 } catch (InterruptedException e) {

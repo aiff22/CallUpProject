@@ -138,5 +138,12 @@ public class UserData {
                 }
         }
     }
+
+    public void delCall(String contact_number, String type) {
+        for (int i = 0; i < data_calls.size(); i++)
+            if (data_calls.get(i).get(1).equals(contact_number) && data_calls.get(i).get(3).equals(type)) {
+                data_calls.remove(i);
+            }
+    }
 }
 

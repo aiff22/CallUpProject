@@ -13,32 +13,48 @@
         android:id="@+id/frameLayout1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:background="@drawable/rounded_corner4">
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:layout_gravity="top|center_horizontal"
+            android:textStyle="italic"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="10dp"
             android:textSize="24sp"></TextView>
 
         <TextView
             android:id="@+id/tvPosition"
-            android:layout_width="wrap_content"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:text="TextView"
             android:layout_gravity="bottom|left"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="5dp"></TextView>
+            android:layout_marginLeft="25dp"></TextView>
 
-        <TextView
-            android:id="@+id/tvSalary"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="50dp"
+            android:padding="14dp"
+            android:scaleType="fitCenter"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:layout_gravity="bottom|right"
-            android:layout_marginRight="5dp"></TextView>
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="5dp"
+            />
+
+        <ImageView
+            android:id="@+id/callStatus"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:text=""
+            android:src="@android:drawable/sym_call_outgoing"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="55dp"/>
 
     </FrameLayout>
 
@@ -50,28 +66,31 @@
         android:layout_marginTop="0dp"
         android:visibility="gone">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Call"
-            android:id="@+id/button"
+            android:src="@android:drawable/ic_menu_call"
+            android:id="@+id/buttonCall"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Message"
-            android:id="@+id/button1"
+            android:src="@android:drawable/ic_dialog_email"
+            android:id="@+id/buttonMsg"
             android:layout_weight = "1"
             style="?android:attr/borderlessButtonStyle" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Deleete"
-            android:id="@+id/button2"
+            android:text="Add+"
+            android:src="@android:drawable/ic_input_add"
+            android:id="@+id/buttonAdd"
             android:layout_weight = "1"
+            android:visibility="gone"
             style="?android:attr/borderlessButtonStyle" />
 
     </LinearLayout>

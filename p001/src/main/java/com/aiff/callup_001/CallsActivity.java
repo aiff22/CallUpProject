@@ -1,38 +1,39 @@
 package com.aiff.callup_001;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class CallsActivity extends Activity implements View.OnClickListener {
 
-    int[] colors = new int[2];
-
+    final String userLoginKey = "com.aiff.callup_001.app.login";
+    final String userPassKey = "com.aiff.callup_001.app.pass";
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calls);
+        final Context mContext = CallsActivity.this;
 
         // -- Get calls data -->
 
         UserData g = UserData.getInstance();
         List<List<String>> data = g.getCalls();
 
-        colors[0] = Color.parseColor("#559966CC");
-        colors[1] = Color.parseColor("#55336699");
-
-        LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
+        final LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
         LayoutInflater ltInflater = getLayoutInflater();
 
         // -- Fill the frames -->
@@ -41,7 +42,8 @@ public class CallsActivity extends Activity implements View.OnClickListener {
 
             final List<String> d = data.get(i);
 
-            View item = ltInflater.inflate(R.layout.item_call, linLayout, false);
+            final View item = ltInflater.inflate(R.layout.item_call, linLayout, false);
+            ImageView imageView = (ImageView) item.findViewById(R.id.callStatus);
             item.setOnClickListener(this);
 
             TextView tvName = (TextView) item.findViewById(R.id.tvName);
@@ -50,25 +52,45 @@ public class CallsActivity extends Activity implements View.OnClickListener {
 
             TextView callDate = (TextView) item.findViewById(R.id.tvPosition);
             callDate.setText(d.get(2));
-            TextView callType = (TextView) item.findViewById(R.id.tvSalary);
-            callType.setText(d.get(3));
 
-            if (d.get(3).equals("3")){
-                callType.setText("missing");
-                item.setBackgroundColor(colors[0]);
-            }  else {
-
-                if (d.get(3).equals("1"))
-                    callType.setText("outcoming");
-                else callType.setText("incoming");
-
-                item.setBackgroundColor(colors[1]);
-            }
-
+            if (d.get(3).equals("3"))
+                imageView.setImageResource(getResources().getIdentifier("@android:drawable/sym_call_missed", null, null));
+            else if (d.get(3).equals("2"))
+                imageView.setImageResource(getResources().getIdentifier("@android:drawable/sym_call_incoming", null, null));
 
             item.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
 
-            Button btnMsgs = (Button) item.findViewById(R.id.button1);
+            ImageButton btnMsgs = (ImageButton) item.findViewById(R.id.buttonMsg);
+            ImageButton btnCall = (ImageButton) item.findViewById(R.id.buttonCall);
+            ImageButton btnAdd = (ImageButton) item.findViewById(R.id.buttonAdd);
+            ImageButton btnDel = (ImageButton) item.findViewById(R.id.btnDelete);
+
+            if (g.findContact(d.get(1)).equals("-1"))
+                btnAdd.setVisibility(View.VISIBLE);
+
+            btnDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delCall(d.get(1), d.get(3));
+                    linLayout.removeView(item);
+                    linLayout.refreshDrawableState();
+                }
+            });
+
+            btnCall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContactsActivity.makeCall(d.get(1), mContext);
+                }
+            });
+
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContactsActivity.addNewContact(d.get(1), mContext);
+                }
+            });
+
             btnMsgs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -94,4 +116,32 @@ public class CallsActivity extends Activity implements View.OnClickListener {
         else ll.setVisibility(View.GONE);
 
     }
+
+    private void delCall(String phone, String type) {
+        SharedPreferences prefs = CallsActivity.this.getSharedPreferences(
+                "com.aiff.callup_001.app", Context.MODE_PRIVATE);
+
+        String storedLogin = prefs.getString(userLoginKey, new String());
+        String storedPass = prefs.getString(userPassKey, new String());
+
+        final String[] args = new String[6];
+        args[0] = "delcall";
+        args[1] = storedLogin;
+        args[2] = storedPass;
+        args[3] = phone;
+        args[4] = type;
+        final UserData g = UserData.getInstance();
+        g.delCall(phone, type);
+
+        try {
+            String res = new ConnectServer().execute(args).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 }
