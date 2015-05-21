@@ -2,6 +2,7 @@ package com.aiff.callup_001;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,7 +46,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-        final Context mContext = ContactsActivity.this;
+        final Activity mContext = ContactsActivity.this;
 
         // -- Get data about contacts -->
 
@@ -89,7 +90,6 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             item.setOnClickListener(this);
 
             if (d.get(3).equals("2")) {
-
                 btnFriend.setImageResource(getResources().getIdentifier("@android:drawable/ic_delete", null, null));
 
                 if (!Boolean.valueOf(online.get(online_counter))) {
@@ -289,7 +289,18 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                             if (d.get(0).equals("friends_online")) {
                                 List<List<String>> addContacts = new ArrayList<>();
                                 addContacts.add(d);
-                                g.setData(addContacts);
+                                List<String> lastOnline = g.getFriendsOnline();
+
+                                if (!lastOnline.equals(d)) {
+                                    g.setData(addContacts);
+                                    Log.d("ContactsActivity", "updateContactStatus");
+                                    TabActivity tab = (TabActivity) getParent();
+                                    String tag = tab.getTabHost().getCurrentTabTag();
+                                    Log.d("ContactsActivity", tag);
+                                    tab.getTabHost().setCurrentTabByTag("tag4");
+                                    tab.getTabHost().setCurrentTabByTag(tag);
+                                }
+
                                 //          TabActivity tab = (TabActivity) getParent();
                                 //          tab.getTabHost().setCurrentTabByTag("tag2");
                                 //          tab.getTabHost().setCurrentTabByTag("tag1");
@@ -518,7 +529,7 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
 
     }
 
-    public static void makeCall(final String phone, final Context mContext) {
+    public static void makeCall(final String phone, final Activity mContext) {
 
         SharedPreferences prefs = mContext.getSharedPreferences(
                 "com.aiff.callup_001.app", Context.MODE_PRIVATE);
@@ -541,7 +552,6 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
             return;
         }
 
-
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Calling to " + phone + "...");
         if (!g.findContact(phone).equals("-1"))
@@ -551,9 +561,9 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
         final AlertDialog dlg = builder.create();
         dlg.show();
 
-        //new Thread(new Runnable() {
-        //    @Override
-        //    public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
                 try {
 
@@ -569,10 +579,10 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                     g.delCall(phone, "1");
                     g.setData(data);
 
-                    String res = new ConnectServer().execute(args).get();
+                    final String res = new ConnectServer().execute(args).get();
                     Log.d("Room returned", res);
 
-                    if (!res.equals("-1") && !res.equals("-2") && !!res.equals("-2") && !res.equals("-4")) {
+                    if (!res.equals("-1") && !res.equals("-2") && !res.equals("-2") && !res.equals("-4")) {
                         dlg.dismiss();
                         Intent intentStartCall = new Intent(mContext, CallingActivity.class);
                         intentStartCall.putExtra("contact", phone);
@@ -580,11 +590,10 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                         mContext.startActivity(intentStartCall);
 
                     } else {
-                       //mContext.runOnUiThread(new Runnable() {
-                       //     public void run() {
+                       mContext.runOnUiThread(new Runnable() {
+                            public void run() {
 
-                       //     }
-                       // });
+
                         dlg.dismiss();
                         if (res.equals("-1"))
                             Toast.makeText(mContext, "No response", Toast.LENGTH_SHORT).show();
@@ -596,6 +605,8 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                             Toast.makeText(mContext, "Contact not found", Toast.LENGTH_SHORT).show();
                         else
                             Toast.makeText(mContext, "An error occurred", Toast.LENGTH_SHORT).show();
+                            }
+                       });
                     }
 
                 } catch (InterruptedException e) {
@@ -606,8 +617,8 @@ public class ContactsActivity extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                 }
 
-        //    }
-        //}).start();
+            }
+        }).start();
 
     }
 

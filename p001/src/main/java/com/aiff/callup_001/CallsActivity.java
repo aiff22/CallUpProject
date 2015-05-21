@@ -35,7 +35,7 @@ public class CallsActivity extends Activity implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calls);
-        final Context mContext = CallsActivity.this;
+        final Activity mContext = CallsActivity.this;
 
         // -- Get calls data -->
 
@@ -169,7 +169,7 @@ public class CallsActivity extends Activity implements View.OnClickListener {
         AlertDialog.Builder alert = new AlertDialog.Builder(CallsActivity.this);
 
         final EditText textPhone = new EditText(CallsActivity.this);
-        final Context mContext = CallsActivity.this;
+        final Activity mContext = CallsActivity.this;
 
         textPhone.setHint("Phone Number");
         textPhone.setInputType(InputType.TYPE_CLASS_PHONE);

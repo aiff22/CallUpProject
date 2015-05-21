@@ -2,6 +2,7 @@ package com.aiff.callup_001;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,18 +39,23 @@ public class CallingActivity extends Activity {
         WebView mWebView = (WebView) findViewById(R.id.webView);
         mWebView.getSettings().setJavaScriptEnabled(true);
 
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onPermissionRequest(PermissionRequest request) {
-                request.grant(request.getResources());
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        // -- Load web page -->
+            mWebView.setWebChromeClient(new WebChromeClient() {
+                @Override
+                public void onPermissionRequest(PermissionRequest request) {
+                    request.grant(request.getResources());
+                }
+            });
 
-        String adress = "http://10.0.2.2:8080/basic/?r=" + room;
-        //String adress = "http://gmail.com";
-        mWebView.loadUrl(adress);
+            // -- Load web page -->
+
+            // String adress = "http://10.0.2.2:8080/basic/?r=" + room;
+            //String adress = "http://gmail.com";
+            String adress = "http://52.25.0.226:8080/basic/?r=" + room;
+            mWebView.loadUrl(adress);
+
+        }
 
         // -- If button "End" is pressed, then finish activity -->
 

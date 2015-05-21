@@ -27,7 +27,8 @@ class ConnectServer extends AsyncTask<String, Void, String> {
         String reqType = args[0];
 
         HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("http://10.0.2.2:8080/requestServlet");
+        // HttpPost post = new HttpPost("http://10.0.2.2:8080/requestServlet");
+        HttpPost post = new HttpPost("http://52.25.0.226:8080/requestServlet");
 
         // -- Switch between different request types -->
 
